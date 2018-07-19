@@ -1,0 +1,22 @@
+{
+  "name": "beautify-context",
+  "version": "1.0.0",
+  "description": "Download, beautify and print lines from a minified JavaScript source",
+  "bin": "index.js",
+  "scripts": {
+  },
+  "keywords": [],
+  "author": "Benoît Zugmeyer <bzugmeyer@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "cardinal": "^2.1.1",
+    "node-fetch": "^2.1.2",
+    "source-map": "^0.7.3",
+    "uglify-es": "^3.3.9"
+  },
+  "devDependencies": {
+    "eslint": "^5.1.0",
+    "eslint-config-benoitz-prettier": "^1.0.1",
+    "prettier": "^1.13.7"
+  }
+}
