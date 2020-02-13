@@ -40,7 +40,11 @@ async function main() {
   printContext(uglifyResult.code, beautifiedPosition)
 }
 
-function printContext(code, { line, column, lastColumn = column + 1 }) {
+function printContext(code, { line, column, lastColumn }) {
+  if (lastColumn === null) {
+    lastColumn = column + 1
+  }
+
   const CONTEXT = 5
   const lines = code.split("\n")
   const before = lines.slice(line - CONTEXT, line)
