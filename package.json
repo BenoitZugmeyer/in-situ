@@ -1,6 +1,6 @@
 {
   "name": "beautify-context",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Download, beautify and print lines from a minified JavaScript source",
   "homepage": "https://github.com/BenoitZugmeyer/beautify-context",
   "repository": "https://github.com/BenoitZugmeyer/beautify-context.git",
