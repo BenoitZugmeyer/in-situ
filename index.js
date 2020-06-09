@@ -20,6 +20,8 @@ async function main() {
   const response = await fetch(url)
   const body = await response.text()
   const uglifyResult = minify(body, {
+    mangle: false,
+    compress: false,
     output: { beautify: true },
     sourceMap: {},
   })

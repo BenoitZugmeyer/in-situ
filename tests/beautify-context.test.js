@@ -67,8 +67,8 @@ test("beautifies context", async () => {
     code: 0,
     stderr: "",
     stdout: `\
-i && j.k;
-       ^
+if (i) j.k;
+         ^
 
 `,
   })
