@@ -2,7 +2,7 @@
 const fetch = require("node-fetch")
 const { minify } = require("uglify-es")
 const { SourceMapConsumer } = require("source-map")
-const { highlight } = require("cardinal")
+const cardinal = require("cardinal")
 
 class CLIError extends Error {}
 
@@ -69,4 +69,11 @@ function parseArg() {
 
 function printUsageAndExit() {
   throw new CLIError("Usage: beautify-context [url]:[line]:[column]")
+}
+
+function highlight(code) {
+  if (process.stdout.isTTY) {
+    return cardinal.highlight(code)
+  }
+  return code
 }
