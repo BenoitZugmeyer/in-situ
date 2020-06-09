@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const fetch = require("node-fetch")
-const { minify } = require("uglify-es")
+const { minify } = require("terser")
 const { SourceMapConsumer } = require("source-map")
 const cardinal = require("cardinal")
 
