@@ -69,7 +69,6 @@ test("beautifies context", async () => {
     stdout: `\
 if (i) j.k;
          ^
-
 `,
   })
 })

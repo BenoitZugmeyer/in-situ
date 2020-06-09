@@ -54,7 +54,9 @@ function printContext(code, { line, column, lastColumn }) {
 
   console.log(highlight(before.join("\n")))
   console.log(" ".repeat(column) + "^".repeat(lastColumn - column))
-  console.log(highlight(after.join("\n")))
+  if (after.length) {
+    console.log(highlight(after.join("\n")))
+  }
 }
 
 function parseArg() {
