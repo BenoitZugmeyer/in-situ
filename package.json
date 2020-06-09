@@ -6,7 +6,8 @@
   "repository": "https://github.com/BenoitZugmeyer/beautify-context.git",
   "bin": "index.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "keywords": [],
   "author": "Benoît Zugmeyer <bzugmeyer@gmail.com>",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "eslint": "^7.2.0",
     "eslint-config-benoitz-prettier": "^1.1.0",
+    "jest": "^26.0.1",
     "prettier": "^2.0.5"
   }
 }
