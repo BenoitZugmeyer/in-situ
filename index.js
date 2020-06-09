@@ -6,7 +6,7 @@ const { highlight } = require("cardinal")
 
 class CLIError extends Error {}
 
-main().catch(e => {
+main().catch((e) => {
   if (e instanceof CLIError) {
     console.error(e.message)
     process.exit(1)
@@ -29,7 +29,7 @@ async function main() {
   const beautifiedPosition = await SourceMapConsumer.with(
     uglifyResult.map,
     null,
-    consumer => {
+    (consumer) => {
       return consumer.generatedPositionFor({
         line,
         column,

@@ -1,9 +1,9 @@
 module.exports = {
-  extends: [ "benoitz-prettier" ],
+  extends: ["benoitz-prettier"],
   rules: {
-    "no-console": "off"
+    "no-console": "off",
   },
   env: {
     node: true,
-  }
+  },
 }
