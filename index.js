@@ -42,6 +42,22 @@ async function main() {
   printContext(uglifyResult.code, beautifiedPosition)
 }
 
+function parseArg() {
+  const arg = process.argv[2]
+
+  if (!arg) printUsageAndExit()
+
+  const matches = /^(.*):(\d+):(\d+)$/.exec(arg)
+  if (!matches) printUsageAndExit()
+
+  const [_, url, line, column] = matches
+  return { url, line, column }
+}
+
+function printUsageAndExit() {
+  throw new CLIError("Usage: beautify-context [url]:[line]:[column]")
+}
+
 function printContext(code, { line, column, lastColumn }) {
   if (lastColumn === null) {
     lastColumn = column + 1
@@ -57,22 +73,6 @@ function printContext(code, { line, column, lastColumn }) {
   if (after.length) {
     console.log(highlight(after.join("\n")))
   }
-}
-
-function parseArg() {
-  const arg = process.argv[2]
-
-  if (!arg) printUsageAndExit()
-
-  const matches = /^(.*):(\d+):(\d+)$/.exec(arg)
-  if (!matches) printUsageAndExit()
-
-  const [_, url, line, column] = matches
-  return { url, line, column }
-}
-
-function printUsageAndExit() {
-  throw new CLIError("Usage: beautify-context [url]:[line]:[column]")
 }
 
 function highlight(code) {
