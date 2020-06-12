@@ -72,3 +72,80 @@ if (i) j.k;
 `,
   })
 })
+
+describe("source map", () => {
+  const generatedCode = "var o=document.title;console.log(o);\n"
+  const sourceMap = JSON.stringify({
+    version: 3,
+    file: "bundle.min.js",
+    sources: ["index.js"],
+    sourcesContent: ["const title = document.title\nconsole.log(title)\n"],
+    names: ["title", "document", "console", "log"],
+    mappings: "AAAA,IAAMA,EAAQC,SAASD,MACvBE,QAAQC,IAAIH",
+  })
+
+  async function testSourceMapRetrieval(responses) {
+    const url = await withServer(responses)
+    expect(await runBeautifyContext(`${url}/bundle.min.js:1:11`)).toEqual({
+      code: 0,
+      stderr: "",
+      stdout: `\
+File: index.js
+const title = document.title
+              ^
+console.log(title)
+
+`,
+    })
+  }
+
+  test("use the source map from a sourcemap comment", async () => {
+    await testSourceMapRetrieval({
+      "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
+      "/bundle.min.js.map": sourceMap,
+    })
+  })
+
+  test("use the source map from a X-SourceMap header", async () => {
+    await testSourceMapRetrieval({
+      "/bundle.min.js": {
+        body: generatedCode,
+        headers: { "X-SourceMap": "bundle.min.js.map" },
+      },
+      "/bundle.min.js.map": sourceMap,
+    })
+  })
+
+  test("use the source map from a SourceMap header", async () => {
+    await testSourceMapRetrieval({
+      "/bundle.min.js": {
+        body: generatedCode,
+        headers: { SourceMap: "bundle.min.js.map" },
+      },
+      "/bundle.min.js.map": sourceMap,
+    })
+  })
+
+  test("use the source map from a data-uri", async () => {
+    const base64EncodedSourceMap = Buffer.from(sourceMap).toString("base64")
+    await testSourceMapRetrieval({
+      "/bundle.min.js": `${generatedCode}\n//@ sourceMappingURL=data:application/json;charset=utf-8;base64,${base64EncodedSourceMap}`,
+    })
+  })
+
+  test("fallback to beautify if the source map is not found", async () => {
+    const url = await withServer({
+      "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
+    })
+    expect(await runBeautifyContext(`${url}/bundle.min.js:1:11`)).toEqual({
+      code: 0,
+      stderr: "",
+      stdout: `\
+var o = document.title;
+        ^
+
+console.log(o);
+`,
+    })
+  })
+})
