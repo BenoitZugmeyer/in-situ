@@ -28,17 +28,12 @@ async function main() {
   if (uglifyResult.error) {
     throw new CLIError(`Failed to parse response: ${uglifyResult.error}`)
   }
-  const beautifiedPosition = await SourceMapConsumer.with(
-    uglifyResult.map,
-    null,
-    (consumer) => {
-      return consumer.generatedPositionFor({
-        line,
-        column,
-        source: consumer.sources[0],
-      })
-    },
-  )
+  const consumer = new SourceMapConsumer(uglifyResult.map)
+  const beautifiedPosition = consumer.generatedPositionFor({
+    line,
+    column,
+    source: consumer.sources[0],
+  })
   printContext(uglifyResult.code, beautifiedPosition)
 }
 
