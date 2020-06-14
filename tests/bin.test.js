@@ -63,19 +63,25 @@ test("beautifies context", async () => {
 })
 
 describe("source map", () => {
-  const generatedCode = "var o=document.title;console.log(o);\n"
+  // generated with
+  // npx terser index.js --mangle -o bundle.min.js -e --toplevel --source-map includeSources
+  const generatedCode =
+    "(function(){const o=document.title;console.log(`\t`,o);window.杨=o})();"
   const sourceMap = JSON.stringify({
     version: 3,
     file: "bundle.min.js",
     sources: ["index.js"],
-    sourcesContent: ["const title = document.title\nconsole.log(title)\n"],
-    names: ["title", "document", "console", "log"],
-    mappings: "AAAA,IAAMA,EAAQC,SAASD,MACvBE,QAAQC,IAAIH",
+    names: ["title", "document", "console", "log", "window", "杨"],
+    mappings:
+      "YAAA,MAAMA,EAAQC,SAASD,MACvBE,QAAQC,IAAI,KAAKH,GACjBI,OAAOC,EAAIL",
+    sourcesContent: [
+      "const title = document.title\nconsole.log(`\t`, title)\nwindow.杨 = title\n",
+    ],
   })
 
   async function testSourceMapRetrieval(responses) {
     const url = await withServer(responses)
-    expect(await runBin(`${url}/bundle.min.js:1:11`)).toMatchSnapshot()
+    expect(await runBin(`${url}/bundle.min.js:1:66`)).toMatchSnapshot()
   }
 
   test("use the source map from a sourcemap comment", async () => {

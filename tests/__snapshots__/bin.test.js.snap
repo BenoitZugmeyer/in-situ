@@ -36,10 +36,12 @@ Fetching source maps...
 Failed to fetch source maps: Not found
 Beautifying source code...
 ",
-  "stdout": "var o = document.title;
-        ^
-
-console.log(o);
+  "stdout": "(function() {
+    const o = document.title;
+    console.log(\`\\\\t\`, o);
+    window.杨 = o;
+                ^
+})();
 ",
 }
 `;
@@ -52,8 +54,9 @@ Fetching source maps...
 ",
   "stdout": "File: index.js
 const title = document.title
-              ^
-console.log(title)
+console.log(\`	\`, title)
+window.杨 = title
+            ^
 
 ",
 }
@@ -67,8 +70,9 @@ Fetching source maps...
 ",
   "stdout": "File: index.js
 const title = document.title
-              ^
-console.log(title)
+console.log(\`	\`, title)
+window.杨 = title
+            ^
 
 ",
 }
@@ -81,8 +85,9 @@ Object {
 ",
   "stdout": "File: index.js
 const title = document.title
-              ^
-console.log(title)
+console.log(\`	\`, title)
+window.杨 = title
+            ^
 
 ",
 }
@@ -96,8 +101,9 @@ Fetching source maps...
 ",
   "stdout": "File: index.js
 const title = document.title
-              ^
-console.log(title)
+console.log(\`	\`, title)
+window.杨 = title
+            ^
 
 ",
 }
