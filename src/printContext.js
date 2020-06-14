@@ -29,7 +29,11 @@ module.exports = function printContext({
 
 function highlight(code) {
   if (process.stdout.isTTY) {
-    return cardinal.highlight(code)
+    try {
+      return cardinal.highlight(code)
+    } catch (_) {
+      // If the code fails to parse, don't highlight it
+    }
   }
   return code
 }
