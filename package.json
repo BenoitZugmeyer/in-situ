@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "cardinal": "^2.1.1",
+    "commander": "^5.1.0",
     "node-fetch": "^2.6.0",
     "source-map": "^0.6.1",
     "terser": "^4.7.0"

@@ -14,10 +14,17 @@ Beautifying source code...
 
 exports[`fails if no argument is given 1`] = `
 Object {
-  "code": 1,
-  "stderr": "Usage: beautify-context [url]:[line]:[column]
+  "code": 0,
+  "stderr": "",
+  "stdout": "Usage: beautify-context [options] <URL:LINE:COLUMN>
+
+Download, beautify and print lines from a minified JavaScript source
+
+Options:
+  -V, --version  output the version number
+  -d, --debug    output extra debugging
+  -h, --help     display help for command
 ",
-  "stdout": "",
 }
 `;
 

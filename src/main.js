@@ -21,8 +21,8 @@ main().catch((e) => {
 })
 
 async function main() {
-  const { sourceURL, position } = parseArguments()
-  log.debug.disabled = true
+  const { debug, sourceURL, position } = parseArguments()
+  log.debug.disabled = !debug
   log.status("Fetching source code...")
   const response = await fetch(sourceURL)
   const source = {

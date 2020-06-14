@@ -1,17 +1,26 @@
-const CLIError = require("./CLIError")
+const commander = require("commander")
+
+const pkg = require("../package.json")
 
 module.exports = function parseArguments() {
-  const arg = process.argv[2]
+  const program = new commander.Command()
+  program.version(pkg.version)
+  program.name(pkg.name)
+  program.description(pkg.description)
+  program.option("-d, --debug", "output extra debugging")
+  program.arguments("<URL:LINE:COLUMN>")
+  program.parse(process.argv)
 
-  if (!arg) printUsageAndExit()
+  const arg = program.args[0]
+  if (!arg) program.help()
 
   const matches = /^(.*):(\d+):(\d+)$/.exec(arg)
-  if (!matches) printUsageAndExit()
+  if (!matches) program.help()
 
   const [_, sourceURL, line, column] = matches
-  return { sourceURL, position: { line: Number(line), column: Number(column) } }
-}
-
-function printUsageAndExit() {
-  throw new CLIError("Usage: beautify-context [url]:[line]:[column]")
+  return {
+    debug: program.debug,
+    sourceURL,
+    position: { line: Number(line), column: Number(column) },
+  }
 }
