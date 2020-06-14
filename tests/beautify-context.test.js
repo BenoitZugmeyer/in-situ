@@ -3,7 +3,7 @@ const http = require("http")
 
 function runBeautifyContext(...args) {
   return new Promise((resolve) => {
-    const path = require.resolve("..")
+    const path = require.resolve("../src/main")
     const process = spawn("node", [path, ...args])
 
     const stderr = []
