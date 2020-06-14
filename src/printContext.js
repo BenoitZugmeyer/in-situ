@@ -14,7 +14,7 @@ module.exports = function printContext({
 
   const CONTEXT = 5
   const lines = content.split("\n")
-  const before = lines.slice(line - CONTEXT, line)
+  const before = lines.slice(Math.max(line - CONTEXT, 0), line)
   const after = lines.slice(line, line + CONTEXT)
 
   if (fileName) {
