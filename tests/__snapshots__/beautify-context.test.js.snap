@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`beautifies context 1`] = `
+Object {
+  "code": 0,
+  "stderr": "",
+  "stdout": "if (i) j.k;
+         ^
+",
+}
+`;
+
+exports[`fails if no argument is given 1`] = `
+Object {
+  "code": 1,
+  "stderr": "Usage: beautify-context [url]:[line]:[column]
+",
+  "stdout": "",
+}
+`;
+
+exports[`source map fallback to beautify if the source map is not found 1`] = `
+Object {
+  "code": 0,
+  "stderr": "",
+  "stdout": "var o = document.title;
+        ^
+
+console.log(o);
+",
+}
+`;
+
+exports[`source map use the source map from a SourceMap header 1`] = `
+Object {
+  "code": 0,
+  "stderr": "",
+  "stdout": "File: index.js
+const title = document.title
+              ^
+console.log(title)
+
+",
+}
+`;
+
+exports[`source map use the source map from a X-SourceMap header 1`] = `
+Object {
+  "code": 0,
+  "stderr": "",
+  "stdout": "File: index.js
+const title = document.title
+              ^
+console.log(title)
+
+",
+}
+`;
+
+exports[`source map use the source map from a data-uri 1`] = `
+Object {
+  "code": 0,
+  "stderr": "",
+  "stdout": "File: index.js
+const title = document.title
+              ^
+console.log(title)
+
+",
+}
+`;
+
+exports[`source map use the source map from a sourcemap comment 1`] = `
+Object {
+  "code": 0,
+  "stderr": "",
+  "stdout": "File: index.js
+const title = document.title
+              ^
+console.log(title)
+
+",
+}
+`;

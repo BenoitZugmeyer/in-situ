@@ -52,25 +52,14 @@ afterEach(() => {
 })
 
 test("fails if no argument is given", async () => {
-  expect(await runBeautifyContext()).toEqual({
-    code: 1,
-    stderr: "Usage: beautify-context [url]:[line]:[column]\n",
-    stdout: "",
-  })
+  expect(await runBeautifyContext()).toMatchSnapshot()
 })
 
 test("beautifies context", async () => {
   const url = await withServer({
     "/": "if(i)j.k",
   })
-  expect(await runBeautifyContext(`${url}:1:8`)).toEqual({
-    code: 0,
-    stderr: "",
-    stdout: `\
-if (i) j.k;
-         ^
-`,
-  })
+  expect(await runBeautifyContext(`${url}:1:8`)).toMatchSnapshot()
 })
 
 describe("source map", () => {
@@ -86,17 +75,9 @@ describe("source map", () => {
 
   async function testSourceMapRetrieval(responses) {
     const url = await withServer(responses)
-    expect(await runBeautifyContext(`${url}/bundle.min.js:1:11`)).toEqual({
-      code: 0,
-      stderr: "",
-      stdout: `\
-File: index.js
-const title = document.title
-              ^
-console.log(title)
-
-`,
-    })
+    expect(
+      await runBeautifyContext(`${url}/bundle.min.js:1:11`),
+    ).toMatchSnapshot()
   }
 
   test("use the source map from a sourcemap comment", async () => {
@@ -134,18 +115,8 @@ console.log(title)
   })
 
   test("fallback to beautify if the source map is not found", async () => {
-    const url = await withServer({
+    await testSourceMapRetrieval({
       "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
-    })
-    expect(await runBeautifyContext(`${url}/bundle.min.js:1:11`)).toEqual({
-      code: 0,
-      stderr: "",
-      stdout: `\
-var o = document.title;
-        ^
-
-console.log(o);
-`,
     })
   })
 })
