@@ -7,18 +7,23 @@ const parseArguments = require("./parseArguments")
 const applyBeautify = require("./applyBeautify")
 const applySourceMap = require("./applySourceMap")
 const printContext = require("./printContext")
+const log = require("./log")
 
 main().catch((e) => {
   if (e instanceof CLIError) {
-    console.error(e.message)
+    log.error(e.message)
     process.exit(1)
   } else {
-    console.error(e)
+    log.error(
+      `An unexpected error occured: ${e instanceof Error ? e.stack : e}`,
+    )
   }
 })
 
 async function main() {
   const { sourceURL, position } = parseArguments()
+  log.debug.disabled = true
+  log.status("Fetching source code...")
   const response = await fetch(sourceURL)
   const source = {
     content: await response.text(),

@@ -1,10 +1,13 @@
 const cardinal = require("cardinal")
 
+const log = require("./log")
+
 module.exports = function printContext({
   content,
   fileName,
   position: { line, column, lastColumn },
 }) {
+  log.status()
   if (!lastColumn) {
     lastColumn = column + 1
   }

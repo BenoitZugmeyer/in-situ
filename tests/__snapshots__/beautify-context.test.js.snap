@@ -3,7 +3,9 @@
 exports[`beautifies context 1`] = `
 Object {
   "code": 0,
-  "stderr": "",
+  "stderr": "Fetching source code...
+Beautifying source code...
+",
   "stdout": "if (i) j.k;
          ^
 ",
@@ -22,7 +24,11 @@ Object {
 exports[`source map fallback to beautify if the source map is not found 1`] = `
 Object {
   "code": 0,
-  "stderr": "",
+  "stderr": "Fetching source code...
+Fetching source maps...
+Failed to fetch source maps: Not found
+Beautifying source code...
+",
   "stdout": "var o = document.title;
         ^
 
@@ -34,7 +40,9 @@ console.log(o);
 exports[`source map use the source map from a SourceMap header 1`] = `
 Object {
   "code": 0,
-  "stderr": "",
+  "stderr": "Fetching source code...
+Fetching source maps...
+",
   "stdout": "File: index.js
 const title = document.title
               ^
@@ -47,7 +55,9 @@ console.log(title)
 exports[`source map use the source map from a X-SourceMap header 1`] = `
 Object {
   "code": 0,
-  "stderr": "",
+  "stderr": "Fetching source code...
+Fetching source maps...
+",
   "stdout": "File: index.js
 const title = document.title
               ^
@@ -60,7 +70,8 @@ console.log(title)
 exports[`source map use the source map from a data-uri 1`] = `
 Object {
   "code": 0,
-  "stderr": "",
+  "stderr": "Fetching source code...
+",
   "stdout": "File: index.js
 const title = document.title
               ^
@@ -73,7 +84,9 @@ console.log(title)
 exports[`source map use the source map from a sourcemap comment 1`] = `
 Object {
   "code": 0,
-  "stderr": "",
+  "stderr": "Fetching source code...
+Fetching source maps...
+",
   "stdout": "File: index.js
 const title = document.title
               ^

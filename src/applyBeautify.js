@@ -1,8 +1,11 @@
-const CLIError = require("./CLIError")
 const { minify } = require("terser")
 const { SourceMapConsumer } = require("source-map")
 
+const CLIError = require("./CLIError")
+const log = require("./log")
+
 module.exports = function applyBeautify(source) {
+  log.status("Beautifying source code...")
   const uglifyResult = minify(source.content, {
     mangle: false,
     compress: false,

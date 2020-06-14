@@ -3,6 +3,8 @@ const url = require("url")
 const fetch = require("node-fetch")
 const { SourceMapConsumer } = require("source-map")
 
+const log = require("./log")
+
 module.exports = async function applySourceMap(source, sourceURL, headers) {
   const sourceMapPath = getSourceMapPath(source.content, headers)
   if (!sourceMapPath) return
@@ -16,11 +18,17 @@ module.exports = async function applySourceMap(source, sourceURL, headers) {
     line: source.position.line,
     column: source.position.column,
   })
-  if (!position.source) return
+  if (!position.source) {
+    log.error("Failed to resolve the position with source map")
+    return
+  }
 
   const fileName = position.source
   const content = consumer.sourceContentFor(fileName, true)
-  if (!content) return { fileName }
+  if (!content) {
+    log.error("Source map doesn't include the source content")
+    return { fileName }
+  }
 
   return {
     content,
@@ -34,24 +42,32 @@ async function getSourceMap(sourceMapPath, sourceURL) {
     /^data:application\/json;(?:charset=(.*?);)?base64,/,
   )
   if (inlineURIMatches) {
+    log.debug("Using inline source maps")
     const [wholeMatch, charset] = inlineURIMatches
     const rawData = sourceMapPath.slice(wholeMatch.length)
     return Buffer.from(rawData, "base64").toString(charset || undefined)
   }
 
+  log.status("Fetching source maps...")
   const sourceMapAbsoluteURL = url.resolve(sourceURL, sourceMapPath)
+  log.debug(`Source maps URL: ${sourceMapAbsoluteURL}`)
   const response = await fetch(sourceMapAbsoluteURL)
-  if (response.status !== 200) return
+  if (response.status !== 200) {
+    log.error(`Failed to fetch source maps: ${response.statusText}`)
+    return
+  }
 
   return await response.text()
 }
 
 function getSourceMapPath(sourceContent, headers) {
   if (headers.has("sourcemap")) {
+    log.debug("Found source map path in 'sourcemap' header")
     return headers.get("sourcemap")
   }
 
   if (headers.has("x-sourcemap")) {
+    log.debug("Found source map path in 'x-sourcemap' header")
     return headers.get("x-sourcemap")
   }
 
@@ -59,6 +75,7 @@ function getSourceMapPath(sourceContent, headers) {
     /\/[*/][@#]\s*sourceMappingURL=(\S+?)\s*(?:\*\/\s*)?$/,
   )
   if (matches) {
+    log.debug("Found source map path in code comment")
     return matches[1]
   }
 }
