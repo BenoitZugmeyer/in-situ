@@ -16,7 +16,7 @@ exports[`fails if no argument is given 1`] = `
 Object {
   "code": 0,
   "stderr": "",
-  "stdout": "Usage: beautify-context [options] <URL:LINE:COLUMN>
+  "stdout": "Usage: in-situ [options] <URL:LINE:COLUMN>
 
 Download, beautify and print lines from a minified JavaScript source
 

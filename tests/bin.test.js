@@ -1,7 +1,7 @@
 const { spawn } = require("child_process")
 const http = require("http")
 
-function runBeautifyContext(...args) {
+function runBin(...args) {
   return new Promise((resolve) => {
     const path = require.resolve("../src/main")
     const process = spawn("node", [path, ...args])
@@ -52,14 +52,14 @@ afterEach(() => {
 })
 
 test("fails if no argument is given", async () => {
-  expect(await runBeautifyContext()).toMatchSnapshot()
+  expect(await runBin()).toMatchSnapshot()
 })
 
 test("beautifies context", async () => {
   const url = await withServer({
     "/": "if(i)j.k",
   })
-  expect(await runBeautifyContext(`${url}:1:8`)).toMatchSnapshot()
+  expect(await runBin(`${url}:1:8`)).toMatchSnapshot()
 })
 
 describe("source map", () => {
@@ -75,9 +75,7 @@ describe("source map", () => {
 
   async function testSourceMapRetrieval(responses) {
     const url = await withServer(responses)
-    expect(
-      await runBeautifyContext(`${url}/bundle.min.js:1:11`),
-    ).toMatchSnapshot()
+    expect(await runBin(`${url}/bundle.min.js:1:11`)).toMatchSnapshot()
   }
 
   test("use the source map from a sourcemap comment", async () => {

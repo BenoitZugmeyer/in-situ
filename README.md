@@ -1,25 +1,25 @@
-# beautify-context
+# in-situ
 
-`beautify-context` is a simple CLI application taking a JavaScript file URL and a line/column
-position inside it.  It will download the JavaScript file, beautify it, and print the context around
-the given position.
+`in-situ` is a simple CLI application taking a JavaScript file URL and a line/column position inside
+it.  It will download the JavaScript file, beautify it, and print the context around the given
+position.
 
 ## Installation
 
 ```
-npm install --global beautify-context
+npm install --global in-situ
 ```
 
 ## Usage
 
 ```
-beautify-context URL:LINE:COLUMN
+in-situ URL:LINE:COLUMN
 ```
 
 ## Example
 
 ```
-beautify-context https://unpkg.com/preact@8.2.9/dist/preact.min.js:1:3427
+in-situ https://unpkg.com/preact@8.2.9/dist/preact.min.js:1:3427
 ```
 ```js
             var n = t ? document.createElementNS("http://www.w3.org/2000/svg", e) : document.createElement(e);
