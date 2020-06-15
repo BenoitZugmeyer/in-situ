@@ -27,6 +27,7 @@ async function main() {
     position,
     beforeContext,
     afterContext,
+    sourceMap,
   } = parseArguments()
   log.debug.disabled = !debug
   log.status("Fetching source code...")
@@ -37,7 +38,8 @@ async function main() {
     position,
   }
 
-  const mappedSource = await applySourceMap(source, sourceURL, response.headers)
+  const mappedSource =
+    sourceMap && (await applySourceMap(source, sourceURL, response.headers))
   Object.assign(source, mappedSource)
 
   const shouldBeautify = !mappedSource || !mappedSource.content

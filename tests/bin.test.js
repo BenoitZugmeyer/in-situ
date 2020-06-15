@@ -83,6 +83,16 @@ describe("source map retrieval", () => {
       "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
     })
   })
+
+  test("no source map option", async () => {
+    const url = await withServer({
+      "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
+      "/bundle.min.js.map": sourceMap,
+    })
+    expect(
+      await runBin(`${url}/bundle.min.js:1:66`, "--no-source-map"),
+    ).toMatchSnapshot()
+  })
 })
 
 function runBin(...args) {
