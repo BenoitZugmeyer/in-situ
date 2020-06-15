@@ -3,6 +3,7 @@ UNRELEASED v2.0.0 - the `zugstack` release
 * Breaking change: project renamed to `in-situ`
 * Feature: use source maps if available
 * Feature: use terser instead of uglify-es
+* Feature: add options to configure how much lines are displayed
 * Feature: more verbose output, and add an option to print debug messages
 * Feature: only highlight code if stdout is a tty
 * Feature: improve context format a bit
