@@ -21,7 +21,13 @@ main().catch((e) => {
 })
 
 async function main() {
-  const { debug, sourceURL, position } = parseArguments()
+  const {
+    debug,
+    sourceURL,
+    position,
+    beforeContext,
+    afterContext,
+  } = parseArguments()
   log.debug.disabled = !debug
   log.status("Fetching source code...")
   const response = await fetch(sourceURL)
@@ -39,5 +45,5 @@ async function main() {
     Object.assign(source, applyBeautify(source))
   }
 
-  printContext(source)
+  printContext(source, { beforeContext, afterContext })
 }

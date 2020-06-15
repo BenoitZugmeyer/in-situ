@@ -4,15 +4,24 @@ const cardinal = require("cardinal")
 
 const log = require("./log")
 
-module.exports = function printContext(source) {
+module.exports = function printContext(
+  source,
+  { beforeContext, afterContext },
+) {
   log.status()
 
-  console.log(formatContext(source, { shouldHighlight: process.stdout.isTTY }))
+  console.log(
+    formatContext(source, {
+      beforeContext,
+      afterContext,
+      shouldHighlight: process.stdout.isTTY,
+    }),
+  )
 }
 
 function formatContext(
   { content, fileName, position: { line, column, lastColumn } },
-  { shouldHighlight = false } = {},
+  { shouldHighlight = false, beforeContext = 5, afterContext = 5 } = {},
 ) {
   if (!lastColumn) {
     lastColumn = column + 1
@@ -28,10 +37,9 @@ function formatContext(
       }
     : (code) => code
 
-  const CONTEXT = 5
   const lines = content.split("\n")
-  const before = lines.slice(Math.max(line - CONTEXT, 0), line)
-  const after = lines.slice(line, line + CONTEXT)
+  const before = lines.slice(Math.max(line - (beforeContext + 1), 0), line)
+  const after = lines.slice(line, line + afterContext)
 
   let output = ""
 

@@ -16,6 +16,60 @@ Beautifying source code...
 }
 `;
 
+exports[`context options 1`] = `
+Object {
+  "code": 0,
+  "stderr": "Fetching source code...
+Beautifying source code...
+",
+  "stdout": "    const o = document.title;
+    console.log(\`\\\\t\`, o);
+                      ^
+    window.杨 = o;
+",
+}
+`;
+
+exports[`context options 2`] = `
+Object {
+  "code": 0,
+  "stderr": "Fetching source code...
+Beautifying source code...
+",
+  "stdout": "    console.log(\`\\\\t\`, o);
+                      ^
+",
+}
+`;
+
+exports[`context options 3`] = `
+Object {
+  "code": 0,
+  "stderr": "Fetching source code...
+Beautifying source code...
+",
+  "stdout": "(function() {
+    const o = document.title;
+    console.log(\`\\\\t\`, o);
+                      ^
+",
+}
+`;
+
+exports[`context options 4`] = `
+Object {
+  "code": 0,
+  "stderr": "Fetching source code...
+Beautifying source code...
+",
+  "stdout": "    console.log(\`\\\\t\`, o);
+                      ^
+    window.杨 = o;
+})();
+",
+}
+`;
+
 exports[`fails if no argument is given 1`] = `
 Object {
   "code": 0,
@@ -25,9 +79,16 @@ Object {
 Download, beautify and print lines from a minified JavaScript source
 
 Options:
-  -V, --version  output the version number
-  -d, --debug    output extra debugging
-  -h, --help     display help for command
+  -A, --after-context <num>   print <num> lines of trailing context after the
+                              selected line
+  -B, --before-context <num>  print <num> lines of leading context before the
+                              selected line
+  -C, --context <num>         print <num> lines of leading and trailing context
+                              surrounding the selected line
+  --no-source-map             don't try to use a source map
+  -d, --debug                 output extra debugging
+  -V, --version               output the version number
+  -h, --help                  display help for command
 ",
 }
 `;

@@ -28,6 +28,16 @@ test("beautifies context", async () => {
   expect(await runBin(`${url}:1:53`)).toMatchSnapshot()
 })
 
+test("context options", async () => {
+  const url = await withServer({
+    "/": generatedCode,
+  })
+  expect(await runBin(`${url}:1:53`, "-C", "1")).toMatchSnapshot()
+  expect(await runBin(`${url}:1:53`, "-C", "0")).toMatchSnapshot()
+  expect(await runBin(`${url}:1:53`, "-A", "0")).toMatchSnapshot()
+  expect(await runBin(`${url}:1:53`, "-B", "0")).toMatchSnapshot()
+})
+
 describe("source map retrieval", () => {
   async function testSourceMapRetrieval(responses) {
     const url = await withServer(responses)
@@ -124,4 +134,3 @@ afterEach(() => {
   servers.forEach((server) => server.close())
   servers.length = 0
 })
-

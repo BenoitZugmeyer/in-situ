@@ -11,10 +11,37 @@ test("prints simple source context", () => {
 test("context limit", () => {
   expect(
     formatContext({
-      content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl",
-      position: { line: 6, column: 0 },
+      content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
+      position: { line: 7, column: 0 },
     }),
-  ).toBe("b\nc\nd\ne\nf\n^\ng\nh\ni\nj\nk")
+  ).toBe("b\nc\nd\ne\nf\ng\n^\nh\ni\nj\nk\nl")
+  expect(
+    formatContext(
+      {
+        content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
+        position: { line: 7, column: 0 },
+      },
+      { beforeContext: 0 },
+    ),
+  ).toBe("g\n^\nh\ni\nj\nk\nl")
+  expect(
+    formatContext(
+      {
+        content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
+        position: { line: 7, column: 0 },
+      },
+      { afterContext: 0 },
+    ),
+  ).toBe("b\nc\nd\ne\nf\ng\n^")
+  expect(
+    formatContext(
+      {
+        content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
+        position: { line: 7, column: 0 },
+      },
+      { beforeContext: 0, afterContext: 0 },
+    ),
+  ).toBe("g\n^")
 })
 
 test("lastColumn", () => {
