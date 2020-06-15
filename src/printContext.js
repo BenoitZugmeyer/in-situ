@@ -4,43 +4,52 @@ const cardinal = require("cardinal")
 
 const log = require("./log")
 
-module.exports = function printContext({
-  content,
-  fileName,
-  position: { line, column, lastColumn },
-}) {
+module.exports = function printContext(source) {
   log.status()
+
+  console.log(formatContext(source, { shouldHighlight: process.stdout.isTTY }))
+}
+
+function formatContext(
+  { content, fileName, position: { line, column, lastColumn } },
+  { shouldHighlight = false } = {},
+) {
   if (!lastColumn) {
     lastColumn = column + 1
   }
+
+  const highlight = shouldHighlight
+    ? (code) => {
+        try {
+          return cardinal.highlight(code)
+        } catch (_) {
+          return code
+        }
+      }
+    : (code) => code
 
   const CONTEXT = 5
   const lines = content.split("\n")
   const before = lines.slice(Math.max(line - CONTEXT, 0), line)
   const after = lines.slice(line, line + CONTEXT)
 
+  let output = ""
+
   if (fileName) {
-    console.log(`File: ${fileName}`)
+    output += `File: ${fileName}\n`
   }
 
-  console.log(highlight(before.join("\n")))
+  output += `${highlight(before.join("\n"))}\n`
+
   const beforeWidth = getStringWidth(lines[line - 1].slice(0, column))
   const markerWidth = getStringWidth(lines[line - 1].slice(column, lastColumn))
-  console.log(" ".repeat(beforeWidth) + "^".repeat(markerWidth))
-  if (after.length) {
-    console.log(highlight(after.join("\n")))
-  }
-}
+  output += " ".repeat(beforeWidth) + "^".repeat(markerWidth)
 
-function highlight(code) {
-  if (process.stdout.isTTY) {
-    try {
-      return cardinal.highlight(code)
-    } catch (_) {
-      // If the code fails to parse, don't highlight it
-    }
+  if (after.length) {
+    output += `\n${highlight(after.join("\n"))}`
   }
-  return code
+
+  return output
 }
 
 function getStringWidth(ch) {
@@ -53,3 +62,5 @@ function getStringWidth(ch) {
     ch,
   ).cols
 }
+
+module.exports.__tests__ = { formatContext }
