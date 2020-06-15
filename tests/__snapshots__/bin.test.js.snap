@@ -28,7 +28,7 @@ Options:
 }
 `;
 
-exports[`source map fallback to beautify if the source map is not found 1`] = `
+exports[`source map retrieval fallback to beautify if the source map is not found 1`] = `
 Object {
   "code": 0,
   "stderr": "Fetching source code...
@@ -46,7 +46,7 @@ Beautifying source code...
 }
 `;
 
-exports[`source map use the source map from a SourceMap header 1`] = `
+exports[`source map retrieval use the source map from a SourceMap header 1`] = `
 Object {
   "code": 0,
   "stderr": "Fetching source code...
@@ -62,7 +62,7 @@ window.杨 = title
 }
 `;
 
-exports[`source map use the source map from a X-SourceMap header 1`] = `
+exports[`source map retrieval use the source map from a X-SourceMap header 1`] = `
 Object {
   "code": 0,
   "stderr": "Fetching source code...
@@ -78,7 +78,7 @@ window.杨 = title
 }
 `;
 
-exports[`source map use the source map from a data-uri 1`] = `
+exports[`source map retrieval use the source map from a data-uri 1`] = `
 Object {
   "code": 0,
   "stderr": "Fetching source code...
@@ -93,7 +93,7 @@ window.杨 = title
 }
 `;
 
-exports[`source map use the source map from a sourcemap comment 1`] = `
+exports[`source map retrieval use the source map from a sourcemap comment 1`] = `
 Object {
   "code": 0,
   "stderr": "Fetching source code...
