@@ -6,8 +6,12 @@ Object {
   "stderr": "Fetching source code...
 Beautifying source code...
 ",
-  "stdout": "if (i) j.k;
-         ^
+  "stdout": "(function() {
+    const o = document.title;
+    console.log(\`\\\\t\`, o);
+                      ^
+    window.杨 = o;
+})();
 ",
 }
 `;

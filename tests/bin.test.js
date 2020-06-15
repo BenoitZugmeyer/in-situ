@@ -23,9 +23,9 @@ test("fails if no argument is given", async () => {
 
 test("beautifies context", async () => {
   const url = await withServer({
-    "/": "if(i)j.k",
+    "/": generatedCode,
   })
-  expect(await runBin(`${url}:1:8`)).toMatchSnapshot()
+  expect(await runBin(`${url}:1:53`)).toMatchSnapshot()
 })
 
 describe("source map retrieval", () => {
