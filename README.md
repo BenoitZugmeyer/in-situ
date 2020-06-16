@@ -21,9 +21,16 @@ Usage: in-situ [options] <URL:LINE:COLUMN>
 Download, beautify and print lines from a minified JavaScript source
 
 Options:
-  -V, --version  output the version number
-  -d, --debug    output extra debugging
-  -h, --help     display help for command
+  -A, --after-context <num>   print <num> lines of trailing context after the
+                              selected line
+  -B, --before-context <num>  print <num> lines of leading context before the
+                              selected line
+  -C, --context <num>         print <num> lines of leading and trailing context
+                              surrounding the selected line
+  --no-source-map             don't try to use a source map
+  -d, --debug                 output extra debugging
+  -V, --version               output the version number
+  -h, --help                  display help for command
 ```
 
 ## Example
