@@ -33,6 +33,7 @@ in-situ https://unpkg.com/preact@10.4.4/dist/preact.min.js:1:3389
 ```
 ```js
 File: ../src/diff/props.js
+                                }
                         }
 
                         if (value) {

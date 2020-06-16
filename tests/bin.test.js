@@ -1,4 +1,5 @@
 const { spawn } = require("child_process")
+const { readFileSync } = require("fs")
 const http = require("http")
 
 // generated with
@@ -92,6 +93,30 @@ describe("source map retrieval", () => {
     expect(
       await runBin(`${url}/bundle.min.js:1:66`, "--no-source-map"),
     ).toMatchSnapshot()
+  })
+})
+
+describe("README examples", () => {
+  const readmeContent = readFileSync(require.resolve("../README.md"), {
+    encoding: "utf-8",
+  })
+
+  const usage = readmeContent.match(/## Usage\n\n```\n(.*?)```/s)[1]
+  const [_, exampleCommand, exampleOutput] = readmeContent.match(
+    /## Example\n\n```\nin-situ (.*?)\n```\n```js\n(.*?)```/s,
+  )
+
+  test("usage format", async () => {
+    expect(await runBin("--help")).toEqual({
+      code: 0,
+      stdout: usage,
+      stderr: "",
+    })
+  })
+
+  test("example", async () => {
+    const result = await runBin(...exampleCommand.split(" "))
+    expect(result.stdout.replace(/\t/g, "        ")).toEqual(exampleOutput)
   })
 })
 
