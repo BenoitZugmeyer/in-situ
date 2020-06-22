@@ -1,4 +1,4 @@
-UNRELEASED v2.0.0 - the `zugstack` release
+2020-06-22 v2.0.0 - the `zugstack` release
 
 * Breaking change: project renamed to `in-situ`
 * Feature: use source maps if available
