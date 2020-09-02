@@ -14,15 +14,15 @@
   "license": "ISC",
   "dependencies": {
     "cardinal": "^2.1.1",
-    "commander": "^5.1.0",
+    "commander": "^2.20.0",
     "node-fetch": "^2.6.0",
     "source-map": "^0.6.1",
-    "terser": "^4.7.0"
+    "terser": "^5.2.1"
   },
   "devDependencies": {
-    "eslint": "^7.2.0",
+    "eslint": "^7.8.1",
     "eslint-config-benoitz-prettier": "^1.1.0",
-    "jest": "^26.0.1",
-    "prettier": "^2.0.5"
+    "jest": "^26.4.2",
+    "prettier": "^2.1.1"
   }
 }

@@ -44,7 +44,7 @@ async function main() {
 
   const shouldBeautify = !mappedSource || !mappedSource.content
   if (shouldBeautify) {
-    Object.assign(source, applyBeautify(source))
+    Object.assign(source, await applyBeautify(source))
   }
 
   printContext(source, { beforeContext, afterContext })
