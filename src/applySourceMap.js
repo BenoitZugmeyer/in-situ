@@ -51,7 +51,13 @@ async function getSourceMap(sourceMapPath, sourceURL) {
   log.status("Fetching source maps...")
   const sourceMapAbsoluteURL = url.resolve(sourceURL, sourceMapPath)
   log.debug(`Source maps URL: ${sourceMapAbsoluteURL}`)
-  const response = await fetch(sourceMapAbsoluteURL)
+  let response
+  try {
+    response = await fetch(sourceMapAbsoluteURL)
+  } catch (e) {
+    log.error(`Failed to fetch source maps: ${e}`)
+    return
+  }
   if (response.status !== 200) {
     log.error(`Failed to fetch source maps: ${response.statusText}`)
     return
