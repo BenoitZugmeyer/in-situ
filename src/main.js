@@ -31,7 +31,12 @@ async function main() {
   } = parseArguments()
   log.debug.disabled = !debug
   log.status("Fetching source code...")
-  const response = await fetch(sourceURL)
+  let response
+  try {
+    response = await fetch(sourceURL)
+  } catch (e) {
+    throw CLIError(`Failed to fetch source code: ${e}`)
+  }
   const source = {
     content: await response.text(),
     fileName: undefined,
