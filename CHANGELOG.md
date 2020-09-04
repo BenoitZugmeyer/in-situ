@@ -1,3 +1,7 @@
+2020-09-04 v2.0.1
+
+* Build: upgrade and reduce dependencies
+
 2020-06-22 v2.0.0 - the `zugstack` release
 
 * Breaking change: project renamed to `in-situ`
