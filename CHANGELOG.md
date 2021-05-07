@@ -1,3 +1,7 @@
+2021-05-07 v2.0.2
+
+* Security: upgrade dependencies
+
 2020-09-04 v2.0.1
 
 * Build: upgrade and reduce dependencies
