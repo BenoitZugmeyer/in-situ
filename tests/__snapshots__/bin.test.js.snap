@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`beautifies context 1`] = `
+exports[`code beautifier beautifies code 1`] = `
 Object {
   "code": 0,
   "stderr": "Fetching source code...
@@ -13,6 +13,17 @@ Beautifying source code...
     window.杨 = o;
 })();
 ",
+}
+`;
+
+exports[`code beautifier fail if the code has a syntax error 1`] = `
+Object {
+  "code": 1,
+  "stderr": "Fetching source code...
+Beautifying source code...
+Failed to parse response: SyntaxError: Unexpected token: operator (<)
+",
+  "stdout": "",
 }
 `;
 

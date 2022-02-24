@@ -6,12 +6,17 @@ const log = require("./log")
 
 module.exports = async function applyBeautify(source) {
   log.status("Beautifying source code...")
-  const uglifyResult = await minify(source.content, {
-    mangle: false,
-    compress: false,
-    output: { beautify: true },
-    sourceMap: true,
-  })
+  let uglifyResult
+  try {
+    uglifyResult = await minify(source.content, {
+      mangle: false,
+      compress: false,
+      output: { beautify: true },
+      sourceMap: true,
+    })
+  } catch (error) {
+    throw new CLIError(`Failed to parse response: ${error}`)
+  }
   if (uglifyResult.error) {
     throw new CLIError(`Failed to parse response: ${uglifyResult.error}`)
   }

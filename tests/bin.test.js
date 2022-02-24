@@ -22,13 +22,6 @@ test("fails if no argument is given", async () => {
   expect(await runBin()).toMatchSnapshot()
 })
 
-test("beautifies context", async () => {
-  const url = await withServer({
-    "/": generatedCode,
-  })
-  expect(await runBin(`${url}:1:53`)).toMatchSnapshot()
-})
-
 test("context options", async () => {
   const url = await withServer({
     "/": generatedCode,
@@ -37,6 +30,22 @@ test("context options", async () => {
   expect(await runBin(`${url}:1:53`, "-C", "0")).toMatchSnapshot()
   expect(await runBin(`${url}:1:53`, "-A", "0")).toMatchSnapshot()
   expect(await runBin(`${url}:1:53`, "-B", "0")).toMatchSnapshot()
+})
+
+describe("code beautifier", () => {
+  test("beautifies code", async () => {
+    const url = await withServer({
+      "/": generatedCode,
+    })
+    expect(await runBin(`${url}:1:53`)).toMatchSnapshot()
+  })
+
+  test("fail if the code has a syntax error", async () => {
+    const url = await withServer({
+      "/": "<html>",
+    })
+    expect(await runBin(`${url}:1:53`)).toMatchSnapshot()
+  })
 })
 
 describe("source map retrieval", () => {
