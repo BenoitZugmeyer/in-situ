@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 
-const fetch = require("node-fetch")
-
 const CLIError = require("./CLIError")
 const parseArguments = require("./parseArguments")
 const applyBeautify = require("./applyBeautify")
 const applySourceMap = require("./applySourceMap")
 const printContext = require("./printContext")
 const log = require("./log")
+const read = require("./read")
 
 main().catch((e) => {
   if (e instanceof CLIError) {
@@ -15,7 +14,7 @@ main().catch((e) => {
     process.exit(1)
   } else {
     log.error(
-      `An unexpected error occured: ${e instanceof Error ? e.stack : e}`,
+      `An unexpected error occurred: ${e instanceof Error ? e.stack : e}`,
     )
   }
 })
@@ -27,29 +26,33 @@ async function main() {
     position,
     beforeContext,
     afterContext,
-    sourceMap,
+    useSourceMap,
   } = parseArguments()
   log.debug.disabled = !debug
   log.status("Fetching source code...")
-  let response
+
+  let bundle
   try {
-    response = await fetch(sourceURL)
+    bundle = await read(sourceURL)
   } catch (e) {
-    throw CLIError(`Failed to fetch source code: ${e}`)
+    throw new CLIError(`Failed to fetch source code: ${e}`)
   }
-  const source = {
-    content: await response.text(),
+
+  let source = {
+    content: bundle.content,
     fileName: undefined,
     position,
   }
 
-  const mappedSource =
-    sourceMap && (await applySourceMap(source, sourceURL, response.headers))
-  Object.assign(source, mappedSource)
+  let mappedSource
+  if (useSourceMap) {
+    mappedSource = await applySourceMap(source, bundle)
+  }
 
-  const shouldBeautify = !mappedSource || !mappedSource.content
-  if (shouldBeautify) {
-    Object.assign(source, await applyBeautify(source))
+  if (mappedSource && mappedSource.content) {
+    source = mappedSource
+  } else {
+    source = await applyBeautify(source)
   }
 
   printContext(source, { beforeContext, afterContext })

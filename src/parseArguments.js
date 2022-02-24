@@ -49,7 +49,7 @@ module.exports = function parseArguments() {
     position: { line: Number(line), column: Number(column) },
     beforeContext,
     afterContext,
-    sourceMap: program.sourceMap,
+    useSourceMap: program.sourceMap,
   }
 }
 

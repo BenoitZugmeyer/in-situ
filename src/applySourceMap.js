@@ -1,29 +1,23 @@
-const url = require("url")
-
-const fetch = require("node-fetch")
 const { SourceMapConsumer } = require("source-map")
 
 const log = require("./log")
 
-module.exports = async function applySourceMap(source, sourceURL, headers) {
-  const sourceMapPath = getSourceMapPath(source.content, headers)
-  if (!sourceMapPath) return
+module.exports = async function applySourceMap({ position }, bundle) {
+  const sourceMapContent = await readSourceMap(bundle)
+  if (!sourceMapContent) return
 
-  const sourceMap = await getSourceMap(sourceMapPath, sourceURL)
-  if (!sourceMap) return
+  const consumer = new SourceMapConsumer(sourceMapContent)
 
-  const consumer = new SourceMapConsumer(sourceMap)
-
-  const position = consumer.originalPositionFor({
-    line: source.position.line,
-    column: source.position.column,
+  const mappedPosition = consumer.originalPositionFor({
+    line: position.line,
+    column: position.column,
   })
-  if (!position.source) {
+  if (!mappedPosition.source) {
     log.error("Failed to resolve the position with source map")
     return
   }
 
-  const fileName = position.source
+  const fileName = mappedPosition.source
   const content = consumer.sourceContentFor(fileName, true)
   if (!content) {
     log.error("Source map doesn't include the source content")
@@ -32,41 +26,32 @@ module.exports = async function applySourceMap(source, sourceURL, headers) {
 
   return {
     content,
-    position,
+    position: mappedPosition,
     fileName,
   }
 }
 
-async function getSourceMap(sourceMapPath, sourceURL) {
-  const inlineURIMatches = sourceMapPath.match(
-    /^data:application\/json;(?:charset=(.*?);)?base64,/,
-  )
-  if (inlineURIMatches) {
-    log.debug("Using inline source maps")
-    const [wholeMatch, charset] = inlineURIMatches
-    const rawData = sourceMapPath.slice(wholeMatch.length)
-    return Buffer.from(rawData, "base64").toString(charset || undefined)
+async function readSourceMap(bundle) {
+  const sourceMapPath = getSourceMapPath(bundle)
+  if (!sourceMapPath) {
+    log.debug("No source map found")
+    return
   }
 
-  log.status("Fetching source maps...")
-  const sourceMapAbsoluteURL = url.resolve(sourceURL, sourceMapPath)
-  log.debug(`Source maps URL: ${sourceMapAbsoluteURL}`)
-  let response
+  const inlineSourceMap = getSourceMapFromInlineURI(sourceMapPath)
+  if (inlineSourceMap) {
+    return inlineSourceMap
+  }
+
   try {
-    response = await fetch(sourceMapAbsoluteURL)
+    log.status("Fetching source maps...")
+    return (await bundle.readRelative(sourceMapPath)).content
   } catch (e) {
-    log.error(`Failed to fetch source maps: ${e}`)
-    return
+    log.error(`Failed to fetch source map: ${e}`)
   }
-  if (response.status !== 200) {
-    log.error(`Failed to fetch source maps: ${response.statusText}`)
-    return
-  }
-
-  return await response.text()
 }
 
-function getSourceMapPath(sourceContent, headers) {
+function getSourceMapPath({ headers, content }) {
   if (headers.has("sourcemap")) {
     log.debug("Found source map path in 'sourcemap' header")
     return headers.get("sourcemap")
@@ -77,11 +62,23 @@ function getSourceMapPath(sourceContent, headers) {
     return headers.get("x-sourcemap")
   }
 
-  const matches = sourceContent.match(
+  const matches = content.match(
     /\/[*/][@#]\s*sourceMappingURL=(\S+?)\s*(?:\*\/\s*)?$/,
   )
   if (matches) {
     log.debug("Found source map path in code comment")
     return matches[1]
+  }
+}
+
+function getSourceMapFromInlineURI(sourceMapPath) {
+  const inlineURIMatches = sourceMapPath.match(
+    /^data:application\/json;(?:charset=(.*?);)?base64,/,
+  )
+  if (inlineURIMatches) {
+    log.debug("Using inline source maps")
+    const [wholeMatch, charset] = inlineURIMatches
+    const rawData = sourceMapPath.slice(wholeMatch.length)
+    return Buffer.from(rawData, "base64").toString(charset || undefined)
   }
 }
