@@ -22,9 +22,9 @@
     "terser": "^5.11.0"
   },
   "devDependencies": {
-    "eslint": "^7.8.1",
+    "eslint": "^8.10.0",
     "eslint-config-benoitz-prettier": "^1.1.0",
-    "jest": "^26.4.2",
-    "prettier": "^2.1.1"
+    "jest": "^27.5.1",
+    "prettier": "^2.5.1"
   }
 }
