@@ -89,6 +89,7 @@ const expectedContent = new Set([
   "src/main.js",
   "src/parseArguments.js",
   "src/printContext.js",
+  "src/read.js",
   "package.json",
   "CHANGELOG.md",
   "LICENSE.md",
