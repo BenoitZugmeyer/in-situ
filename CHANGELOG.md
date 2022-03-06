@@ -1,3 +1,9 @@
+2022-03-06 v2.1.0
+
+* Feature: read from local files
+* Build: upgrade dependencies
+* Fix: improve error message in case of syntax error
+
 2021-05-07 v2.0.2
 
 * Security: upgrade dependencies
