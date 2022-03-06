@@ -18,7 +18,7 @@
     "cardinal": "^2.1.1",
     "commander": "^2.20.0",
     "node-fetch": "^2.6.7",
-    "source-map": "^0.6.1",
+    "source-map": "^0.7.3",
     "terser": "^5.11.0"
   },
   "devDependencies": {

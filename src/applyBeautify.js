@@ -21,8 +21,7 @@ module.exports = async function applyBeautify(source) {
     throw new CLIError(`Failed to parse response: ${uglifyResult.error}`)
   }
 
-  const consumer = new SourceMapConsumer(uglifyResult.map)
-  return {
+  return SourceMapConsumer.with(uglifyResult.map, null, (consumer) => ({
     fileName: source.fileName,
     content: uglifyResult.code,
     position: consumer.generatedPositionFor({
@@ -30,5 +29,5 @@ module.exports = async function applyBeautify(source) {
       column: source.position.column,
       source: consumer.sources[0],
     }),
-  }
+  }))
 }
