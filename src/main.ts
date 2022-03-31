@@ -3,6 +3,7 @@
 import CLIError from "./CLIError";
 import parseArguments from "./parseArguments";
 import contextCommand from "./commands/context";
+import modulesCommand from "./commands/modules";
 import log from "./log";
 
 main().catch((e) => {
@@ -22,6 +23,9 @@ async function main() {
   switch (args.command) {
     case "context":
       await contextCommand(args);
+      break;
+    case "modules":
+      await modulesCommand(args);
       break;
   }
 }

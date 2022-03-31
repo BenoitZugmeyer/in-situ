@@ -1,10 +1,13 @@
-import commander, { Option } from "commander";
+import commander from "commander";
 
 import CLIError from "./CLIError";
 import pkg from "../package.json";
 import { ContextCommandArguments } from "./commands/context";
+import { ModulesCommandArguments } from "./commands/modules";
 
-type CommandArguments = { command: "context" } & ContextCommandArguments;
+type CommandArguments =
+  | ({ command: "context" } & ContextCommandArguments)
+  | ({ command: "modules" } & ModulesCommandArguments);
 type Arguments = CommandArguments & { debug: boolean };
 
 export default function parseArguments(argv = process.argv): Arguments {
@@ -63,6 +66,14 @@ export default function parseArguments(argv = process.argv): Arguments {
     };
   });
 
+  const modulesCommand = program.command("modules");
+  modulesCommand.arguments("<URL>");
+  modulesCommand.action((sourceURL) => {
+    result = {
+      command: "modules",
+      sourceURL,
+    };
+  });
   program.parse(argv);
 
   if (!result) {

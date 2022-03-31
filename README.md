@@ -27,6 +27,7 @@ Options:
 
 Commands:
   context [options] <URL:LINE:COLUMN>
+  modules <URL>
   help [command]                       display help for command
 ```
 
