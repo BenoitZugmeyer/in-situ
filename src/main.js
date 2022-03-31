@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const CLIError = require("./CLIError")
-const parseArguments = require("./parseArguments")
+import parseArguments from "./parseArguments"
 const applyBeautify = require("./applyBeautify")
 const applySourceMap = require("./applySourceMap")
 const printContext = require("./printContext")
