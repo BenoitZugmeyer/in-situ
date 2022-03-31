@@ -3,7 +3,7 @@ const commander = require("commander")
 const CLIError = require("./CLIError")
 const pkg = require("../package.json")
 
-module.exports = function parseArguments() {
+module.exports = function parseArguments(argv = process.argv) {
   const program = new commander.Command()
   program.name(pkg.name)
   program.description(pkg.description)
@@ -26,7 +26,7 @@ module.exports = function parseArguments() {
   program.option("-d, --debug", "output extra debugging")
   program.version(pkg.version)
   program.arguments("<URL:LINE:COLUMN>")
-  program.parse(process.argv)
+  program.parse(argv)
 
   const arg = program.args[0]
   if (!arg) program.help()
