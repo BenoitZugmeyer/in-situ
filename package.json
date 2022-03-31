@@ -23,10 +23,23 @@
     "terser": "^5.11.0"
   },
   "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.23",
     "esbuild": "^0.14.29",
+    "esbuild-jest": "^0.5.0",
     "eslint": "^8.10.0",
     "eslint-config-benoitz-prettier": "^1.1.0",
     "jest": "^27.5.1",
     "prettier": "^2.5.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": [
+        "esbuild-jest",
+        {
+          "sourcemap": true
+        }
+      ]
+    }
   }
 }
