@@ -1,67 +1,78 @@
-import commander from "commander";
+import commander, { Option } from "commander";
 
 import CLIError from "./CLIError";
 import pkg from "../package.json";
-import { Position } from "./types";
+import { ContextCommandArguments } from "./commands/context";
 
-type Arguments = {
-  debug: boolean;
-  sourceURL: string;
-  position: Position;
-  useSourceMap: boolean;
-  beforeContext: number;
-  afterContext: number;
-};
+type CommandArguments = { command: "context" } & ContextCommandArguments;
+type Arguments = CommandArguments & { debug: boolean };
 
 export default function parseArguments(argv = process.argv): Arguments {
+  let result: CommandArguments | undefined;
   const program = new commander.Command();
   program.name(pkg.name);
   program.description(pkg.description);
-  program.option(
+  program.version(pkg.version);
+  program.option("-d, --debug", "output extra debugging");
+
+  const contextCommand = program.command(
+    "context",
+    // @ts-ignore looks like incorrect commander typings
+    { isDefault: true }
+  );
+  contextCommand.option(
     "-A, --after-context <num>",
     "print <num> lines of trailing context after the selected line",
     parseInteger
   );
-  program.option(
+  contextCommand.option(
     "-B, --before-context <num>",
     "print <num> lines of leading context before the selected line",
     parseInteger
   );
-  program.option(
+  contextCommand.option(
     "-C, --context <num>",
     "print <num> lines of leading and trailing context surrounding the selected line",
     parseInteger
   );
-  program.option("--no-source-map", "don't try to use a source map");
-  program.option("-d, --debug", "output extra debugging");
-  program.version(pkg.version);
-  program.arguments("<URL:LINE:COLUMN>");
+  contextCommand.option("--no-source-map", "don't try to use a source map");
+  contextCommand.arguments("<URL:LINE:COLUMN>");
+  contextCommand.action((arg, options) => {
+    const matches = /^(.*):(\d+):(\d+)$/.exec(arg);
+    if (!matches) {
+      return;
+    }
+    const [_, sourceURL, line, column] = matches;
+
+    const beforeContext =
+      options.beforeContext !== undefined
+        ? options.beforeContext
+        : options.context;
+    const afterContext =
+      options.afterContext !== undefined
+        ? options.afterContext
+        : options.context;
+
+    result = {
+      command: "context",
+      sourceURL,
+      position: { line: parseInteger(line), column: parseInteger(column) },
+      beforeContext,
+      afterContext,
+      useSourceMap: Boolean(options.sourceMap),
+    };
+  });
+
   program.parse(argv);
 
-  const arg = program.args[0];
-  if (!arg) program.help();
-
-  const matches = /^(.*):(\d+):(\d+)$/.exec(arg);
-  if (!matches) {
+  if (!result) {
     program.help();
-    throw "unreachable";
+    throw "unreachable"; // program.help() is calling process.exit()
   }
 
-  const [_, sourceURL, line, column] = matches;
-
-  const opts = program.opts();
-  const beforeContext =
-    opts.beforeContext !== undefined ? opts.beforeContext : opts.context;
-  const afterContext =
-    opts.afterContext !== undefined ? opts.afterContext : opts.context;
-
   return {
-    debug: program.debug,
-    sourceURL,
-    position: { line: Number(line), column: Number(column) },
-    beforeContext,
-    afterContext,
-    useSourceMap: program.sourceMap,
+    ...result,
+    debug: program.opts().debug,
   };
 }
 

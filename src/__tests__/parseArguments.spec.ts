@@ -1,33 +1,45 @@
 import parseArguments from "../parseArguments";
 
-let stdout: jest.SpyInstance<
-  boolean,
-  [str: string | Uint8Array, encoding?: any, cb?: any]
+type WriteSpy = jest.SpyInstance<
+  ReturnType<typeof process.stdout.write>,
+  Parameters<typeof process.stdout.write>
 >;
+let stdout: WriteSpy;
+let stderr: WriteSpy;
+
 beforeEach(() => {
   jest.spyOn(process, "exit").mockImplementation((status) => {
     throw new Error(`exit ${status}`);
   });
   stdout = jest.spyOn(process.stdout, "write").mockImplementation(() => true);
+  stderr = jest.spyOn(process.stderr, "write").mockImplementation(() => true);
 });
 
 test("parseArguments", () => {
   expect(() =>
     parseArguments(`x x`.split(" "))
-  ).toThrowErrorMatchingInlineSnapshot(`"exit undefined"`);
+  ).toThrowErrorMatchingInlineSnapshot(`"exit 1"`);
+  expect(stderr.mock.calls[0][0]).toMatchInlineSnapshot(`
+    "error: missing required argument 'URL:LINE:COLUMN'
+    "
+  `);
+
+  expect(() =>
+    parseArguments(`x x --help`.split(" "))
+  ).toThrowErrorMatchingInlineSnapshot(`"exit 0"`);
   expect(stdout.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "Usage: in-situ [options] <URL:LINE:COLUMN>
+    "Usage: in-situ [options] [command]
 
     Download, beautify and print lines from a minified JavaScript source
 
     Options:
-      -A, --after-context <num>   print <num> lines of trailing context after the selected line
-      -B, --before-context <num>  print <num> lines of leading context before the selected line
-      -C, --context <num>         print <num> lines of leading and trailing context surrounding the selected line
-      --no-source-map             don't try to use a source map
-      -d, --debug                 output extra debugging
-      -V, --version               output the version number
-      -h, --help                  output usage information
+      -V, --version                        output the version number
+      -d, --debug                          output extra debugging
+      -h, --help                           display help for command
+
+    Commands:
+      context [options] <URL:LINE:COLUMN>
+      help [command]                       display help for command
     "
   `);
 
@@ -38,6 +50,7 @@ test("parseArguments", () => {
 
   expect(parseArguments(`x x https://foo.com:1:1`.split(" "))).toEqual({
     debug: undefined,
+    command: "context",
     sourceURL: "https://foo.com",
     position: { line: 1, column: 1 },
     beforeContext: undefined,
@@ -55,6 +68,14 @@ test("parseArguments", () => {
   expect(parseArguments(`x x -d https://foo.com:1:1`.split(" "))).toEqual(
     expect.objectContaining({
       debug: true,
+    })
+  );
+
+  expect(
+    parseArguments(`x x --no-source-map https://foo.com:1:1`.split(" "))
+  ).toEqual(
+    expect.objectContaining({
+      useSourceMap: false,
     })
   );
 });
