@@ -5,11 +5,12 @@
   "homepage": "https://github.com/BenoitZugmeyer/in-situ",
   "repository": "https://github.com/BenoitZugmeyer/in-situ.git",
   "bin": {
-    "in-situ": "src/main.js"
+    "in-situ": "./main.js"
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "tools/build.js"
   },
   "keywords": [],
   "author": "Benoît Zugmeyer <bzugmeyer@gmail.com>",
@@ -22,6 +23,7 @@
     "terser": "^5.11.0"
   },
   "devDependencies": {
+    "esbuild": "^0.14.29",
     "eslint": "^8.10.0",
     "eslint-config-benoitz-prettier": "^1.1.0",
     "jest": "^27.5.1",

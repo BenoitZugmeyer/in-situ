@@ -1,4 +1,7 @@
-const { spawn } = require("child_process")
+const { promisify } = require("util")
+const childProcess = require("child_process")
+const spawn = childProcess.spawn
+const execFile = promisify(childProcess.execFile)
 const { readFileSync } = require("fs")
 const http = require("http")
 
@@ -129,24 +132,34 @@ describe("README examples", () => {
   })
 })
 
-function runBin(...args) {
-  return new Promise((resolve) => {
-    const path = require.resolve("../src/main")
-    const process = spawn("node", [path, ...args])
+let isBuilt = false
+async function runBin(...args) {
+  if (!isBuilt) {
+    await execFile(require.resolve("../tools/build"))
+    isBuilt = true
+  }
 
-    const stderr = []
-    const stdout = []
-    process.stdout.on("data", (data) => stdout.push(data))
-    process.stderr.on("data", (data) => stderr.push(data))
+  return execMain()
 
-    process.on("close", (code) => {
-      resolve({
-        code,
-        stderr: Buffer.concat(stderr).toString("utf-8"),
-        stdout: Buffer.concat(stdout).toString("utf-8"),
+  function execMain() {
+    return new Promise((resolve) => {
+      const path = require.resolve("../main")
+      const process = spawn("node", [path, ...args])
+
+      const stderr = []
+      const stdout = []
+      process.stdout.on("data", (data) => stdout.push(data))
+      process.stderr.on("data", (data) => stderr.push(data))
+
+      process.on("close", (code) => {
+        resolve({
+          code,
+          stderr: Buffer.concat(stderr).toString("utf-8"),
+          stdout: Buffer.concat(stdout).toString("utf-8"),
+        })
       })
     })
-  })
+  }
 }
 
 const servers = []
