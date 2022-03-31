@@ -6,7 +6,7 @@ const applyBeautify = require("./applyBeautify")
 const applySourceMap = require("./applySourceMap")
 const printContext = require("./printContext")
 const log = require("./log")
-const read = require("./read")
+import read from "./read"
 
 main().catch((e) => {
   if (e instanceof CLIError) {
