@@ -39,6 +39,7 @@ if (!firstChangelogLine.startsWith(expectedFirstChangelogLine)) {
 
 console.log("\nRunning tests...")
 exec("npm --silent test", { stdio: "inherit" })
+console.log("\nRunning lint...")
 exec("npm run --silent lint", { stdio: "inherit" })
 
 console.log("\nPacking...")
@@ -82,14 +83,7 @@ for (let line of packed) {
 }
 
 const expectedContent = new Set([
-  "src/applyBeautify.js",
-  "src/applySourceMap.js",
-  "src/CLIError.js",
-  "src/log.js",
-  "src/main.js",
-  "src/parseArguments.js",
-  "src/printContext.js",
-  "src/read.js",
+  "main.js",
   "package.json",
   "CHANGELOG.md",
   "LICENSE.md",
@@ -103,6 +97,7 @@ for (const file of content) {
   if (!expectedContent.has(file)) error(`Unexpected ${file} in package content`)
 }
 
+console.log("OK")
 console.log(`\nPublishing to channel ${channel}:`)
 
 exec(`npm publish ${tarballFileName} --tag ${channel}`, {
