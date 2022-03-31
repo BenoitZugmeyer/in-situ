@@ -21,9 +21,9 @@ describe("parseArguments", () => {
       parseArguments(`x x`.split(" "))
     ).toThrowErrorMatchingInlineSnapshot(`"exit 1"`);
     expect(stderr.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "error: missing required argument 'URL:LINE:COLUMN'
-    "
-  `);
+          "error: missing required argument 'URL:LINE:COLUMN'
+          "
+      `);
   });
 
   test("help", () => {
@@ -31,21 +31,21 @@ describe("parseArguments", () => {
       parseArguments(`x x --help`.split(" "))
     ).toThrowErrorMatchingInlineSnapshot(`"exit 0"`);
     expect(stdout.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "Usage: in-situ [options] [command]
+      "Usage: in-situ [options] [command]
 
-    Download, beautify and print lines from a minified JavaScript source
+      Download, beautify and print lines from a minified JavaScript source
 
-    Options:
-      -V, --version                        output the version number
-      -d, --debug                          output extra debugging
-      -h, --help                           display help for command
+      Options:
+        -V, --version                        output the version number
+        -d, --debug                          output extra debugging
+        -h, --help                           display help for command
 
-    Commands:
-      context [options] <URL:LINE:COLUMN>
-      modules <URL>
-      help [command]                       display help for command
-    "
-  `);
+      Commands:
+        context [options] <URL:LINE:COLUMN>
+        modules [options] <URL>
+        help [command]                       display help for command
+      "
+    `);
   });
 
   test("version", () => {
@@ -93,6 +93,9 @@ describe("parseArguments", () => {
       debug: undefined,
       command: "modules",
       sourceURL: "https://foo.com",
+      consolidateNull: true,
+      limit: undefined,
+      sort: "size",
     });
 
     expect(parseArguments(`x x -d modules https://foo.com`.split(" "))).toEqual(

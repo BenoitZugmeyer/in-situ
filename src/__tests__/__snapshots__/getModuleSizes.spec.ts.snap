@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getModuleSizes 1`] = `
+Array [
+  Object {
+    "size": 12,
+    "source": null,
+  },
+  Object {
+    "size": 58,
+    "source": "index.js",
+  },
+]
+`;

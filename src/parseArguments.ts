@@ -1,4 +1,4 @@
-import commander from "commander";
+import commander, { Option } from "commander";
 
 import CLIError from "./CLIError";
 import pkg from "../package.json";
@@ -68,10 +68,25 @@ export default function parseArguments(argv = process.argv): Arguments {
 
   const modulesCommand = program.command("modules");
   modulesCommand.arguments("<URL>");
-  modulesCommand.action((sourceURL) => {
+  modulesCommand.option("--no-consolidate-null");
+  modulesCommand.addOption(
+    new Option("-s, --sort <criterion>")
+      .choices(["path", "size"])
+      .default("size")
+  );
+  modulesCommand.addOption(
+    new Option(
+      "-l, --limit <criterion>",
+      "limit the number of entries to display"
+    )
+  );
+  modulesCommand.action((sourceURL, options) => {
     result = {
       command: "modules",
       sourceURL,
+      consolidateNull: !!options.consolidateNull,
+      sort: options.sort,
+      limit: parseLimit(options.limit),
     };
   });
   program.parse(argv);
@@ -95,4 +110,67 @@ function parseInteger(s: string): number {
     );
   }
   return n;
+}
+
+function parseLimit(limit: string | undefined): Limit | undefined {
+  if (limit === undefined) {
+    return;
+  }
+  const matches = /^([<>-])?(\d+)([km]?b)?$/i.exec(limit);
+  if (!matches) {
+    throw new CLIError("Invalid limit argument");
+  }
+  const operator = matches[1];
+  let number = Number(matches[2]);
+  const unit = matches[3]?.toLowerCase();
+  if (unit) {
+    switch (unit) {
+      case "kb":
+        number *= 1000;
+        break;
+      case "mb":
+        number *= 1000 ** 2;
+        break;
+    }
+
+    let min: number;
+    let max: number;
+    switch (operator) {
+      case "-":
+        throw new CLIError("Invalid limit argument");
+
+      case "<":
+        min = -Infinity;
+        max = number;
+        break;
+
+      default:
+      case ">":
+        min = number;
+        max = Infinity;
+        break;
+    }
+    return {
+      type: "size",
+      min,
+      max,
+    };
+  } else {
+    let count: number;
+    switch (operator) {
+      case "<":
+      case ">":
+        throw new CLIError("Invalid limit argument");
+
+      case "-":
+        count = -number;
+        break;
+      default:
+        count = number;
+    }
+    return {
+      type: "count",
+      count,
+    };
+  }
 }
