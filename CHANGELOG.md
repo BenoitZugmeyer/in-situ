@@ -1,3 +1,8 @@
+UNRELEASED v2.2.0
+
+* Feature: introduce the "modules" subcommand to list modules from a bundle and show them as a
+  treemap
+
 2022-03-06 v2.1.0
 
 * Feature: read from local files
