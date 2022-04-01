@@ -84,6 +84,7 @@ for (let line of packed) {
 
 const expectedContent = new Set([
   "main.js",
+  "front.js",
   "package.json",
   "CHANGELOG.md",
   "LICENSE.md",

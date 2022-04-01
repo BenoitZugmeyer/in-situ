@@ -8,6 +8,7 @@ let status
 module.exports = {
   debug: makeLogFunction(),
   error: makeLogFunction(),
+  info: makeLogFunction(),
   status: setStatus,
 }
 

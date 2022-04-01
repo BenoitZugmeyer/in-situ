@@ -80,6 +80,7 @@ export default function parseArguments(argv = process.argv): Arguments {
       "limit the number of entries to display"
     )
   );
+  modulesCommand.option("--map", "display as a treemap");
   modulesCommand.action((sourceURL, options) => {
     result = {
       command: "modules",
@@ -87,6 +88,7 @@ export default function parseArguments(argv = process.argv): Arguments {
       consolidateNull: !!options.consolidateNull,
       sort: options.sort,
       limit: parseLimit(options.limit),
+      map: options.map,
     };
   });
   program.parse(argv);
