@@ -1,6 +1,6 @@
 {
   "name": "in-situ",
-  "version": "2.1.0",
+  "version": "2.2.0-beta.0",
   "description": "Download, beautify and print lines from a minified JavaScript source",
   "homepage": "https://github.com/BenoitZugmeyer/in-situ",
   "repository": "https://github.com/BenoitZugmeyer/in-situ.git",
