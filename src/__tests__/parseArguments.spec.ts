@@ -1,4 +1,4 @@
-import parseArguments from "../parseArguments";
+import parseArguments from "../parseArguments.ts";
 
 let stdout: jest.SpyInstance<
   boolean,

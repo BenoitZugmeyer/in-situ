@@ -1,10 +1,10 @@
-const { minify } = require("terser");
-const { SourceMapConsumer } = require("source-map");
+import { minify } from "terser";
+import { SourceMapConsumer } from "source-map";
 
-const CLIError = require("./CLIError");
-const log = require("./log");
+import CLIError from "./CLIError.js";
+import log from "./log.js";
 
-module.exports = async function applyBeautify(source) {
+export default async function applyBeautify(source) {
   log.status("Beautifying source code...");
   let uglifyResult;
   try {
@@ -30,4 +30,4 @@ module.exports = async function applyBeautify(source) {
       source: consumer.sources[0],
     }),
   }));
-};
+}

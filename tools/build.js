@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
-const { dependencies } = require("../package.json");
+import { buildSync } from "esbuild";
+import { readFileSync } from "fs";
 
-require("esbuild").buildSync({
+const { dependencies } = JSON.parse(readFileSync("package.json", "utf-8"));
+
+buildSync({
   entryPoints: ["./src/main"],
   bundle: true,
   platform: "node",
   target: ["node16"],
-  outfile: "main.js",
+  outfile: "main.cjs",
   external: Object.keys(dependencies),
 });

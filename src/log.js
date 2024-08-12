@@ -5,7 +5,7 @@ const ERASE_LINE = "\x1b[K";
 const isTTY = process.stderr.isTTY;
 let status;
 
-module.exports = {
+export default {
   debug: makeLogFunction(),
   error: makeLogFunction(),
   status: setStatus,

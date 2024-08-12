@@ -19,17 +19,6 @@ export default [
     },
   },
 
-  // JavaScript files (not TypeScript)
-  {
-    files: ["**/*.js"],
-    languageOptions: {
-      globals: {
-        module: "readonly",
-        require: "readonly",
-      },
-    },
-  },
-
   {
     files: ["tools/*.js"],
     rules: {

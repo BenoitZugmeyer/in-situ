@@ -2,7 +2,7 @@ import url from "url";
 import path from "path";
 import fs from "fs/promises";
 
-import log from "./log";
+import log from "./log.js";
 
 export interface File {
   content: string;

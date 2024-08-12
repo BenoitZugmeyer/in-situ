@@ -1,5 +1,5 @@
-import log from "./log";
-import { File } from "./read";
+import log from "./log.js";
+import type { File } from "./read.ts";
 
 export default async function readSourceMap(
   bundle: File,

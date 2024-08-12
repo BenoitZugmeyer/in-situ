@@ -1,13 +1,9 @@
-const readline = require("readline");
+import readline from "readline";
+import cardinal from "cardinal";
 
-const cardinal = require("cardinal");
+import log from "./log.js";
 
-const log = require("./log");
-
-module.exports = function printContext(
-  source,
-  { beforeContext, afterContext },
-) {
+export default function printContext(source, { beforeContext, afterContext }) {
   log.status();
 
   console.log(
@@ -17,7 +13,7 @@ module.exports = function printContext(
       shouldHighlight: process.stdout.isTTY,
     }),
   );
-};
+}
 
 function formatContext(
   { content, fileName, position: { line, column, lastColumn } },
@@ -71,4 +67,4 @@ function getStringWidth(ch) {
   ).cols;
 }
 
-module.exports.__tests__ = { formatContext };
+export const __tests__ = { formatContext };

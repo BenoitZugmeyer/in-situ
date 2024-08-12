@@ -1,8 +1,9 @@
 import commander from "commander";
+import { readFileSync } from "fs";
 
-import CLIError from "./CLIError";
-import pkg from "../package.json";
-import { Position } from "./types";
+import CLIError from "./CLIError.js";
+import type { Position } from "./types.ts";
+import { fileURLToPath } from "node:url";
 
 type Arguments = {
   debug: boolean;
@@ -14,6 +15,7 @@ type Arguments = {
 };
 
 export default function parseArguments(argv = process.argv): Arguments {
+  const pkg = getPackageInfos();
   const program = new commander.Command();
   program.name(pkg.name);
   program.description(pkg.description);
@@ -63,6 +65,29 @@ export default function parseArguments(argv = process.argv): Arguments {
     afterContext,
     useSourceMap: program.sourceMap,
   };
+}
+
+function getPackageInfos() {
+  let input;
+  for (const path of [
+    // When from main.js
+    "./package.json",
+    // When from src/main.js
+    "../package.json",
+  ]) {
+    try {
+      input = readFileSync(fileURLToPath(import.meta.resolve(path)), "utf-8");
+      break;
+    } catch {
+      // continue
+    }
+  }
+
+  if (!input) {
+    throw new CLIError("Cannot find package.json");
+  }
+
+  return JSON.parse(input);
 }
 
 function parseInteger(s: string): number {

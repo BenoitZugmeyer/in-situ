@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-const CLIError = require("./CLIError");
-import parseArguments from "./parseArguments";
-const applyBeautify = require("./applyBeautify");
-const applySourceMap = require("./applySourceMap");
-const printContext = require("./printContext");
-const log = require("./log");
-import read from "./read";
+import CLIError from "./CLIError.js";
+import parseArguments from "./parseArguments.ts";
+import applyBeautify from "./applyBeautify.js";
+import applySourceMap from "./applySourceMap.js";
+import printContext from "./printContext.js";
+import log from "./log.js";
+import read from "./read.ts";
 
 main().catch((e) => {
   if (e instanceof CLIError) {

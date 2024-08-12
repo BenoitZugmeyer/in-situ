@@ -1,5 +1,5 @@
-const { execSync: exec } = require("child_process");
-const { readFileSync: read } = require("fs");
+import { execSync as exec } from "child_process";
+import { readFileSync as read } from "fs";
 
 console.log("Verifying context...");
 

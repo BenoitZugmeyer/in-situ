@@ -1,10 +1,9 @@
-import readSourceMap from "./readSourceMap";
+import { SourceMapConsumer } from "source-map";
 
-const { SourceMapConsumer } = require("source-map");
+import readSourceMap from "./readSourceMap.ts";
+import log from "./log.js";
 
-const log = require("./log");
-
-module.exports = async function applySourceMap({ position }, bundle) {
+export default async function applySourceMap({ position }, bundle) {
   const sourceMapContent = await readSourceMap(bundle);
   if (!sourceMapContent) return;
 
@@ -38,4 +37,4 @@ module.exports = async function applySourceMap({ position }, bundle) {
       };
     },
   );
-};
+}

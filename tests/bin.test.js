@@ -1,9 +1,9 @@
-const { promisify } = require("util");
-const childProcess = require("child_process");
+import { promisify } from "util";
+import childProcess from "child_process";
 const spawn = childProcess.spawn;
 const execFile = promisify(childProcess.execFile);
-const { readFileSync } = require("fs");
-const http = require("http");
+import { readFileSync } from "fs";
+import http from "http";
 
 // generated with
 // npx terser index.js --mangle -o bundle.min.js -e --toplevel --source-map includeSources
@@ -109,7 +109,7 @@ describe("source map retrieval", () => {
 });
 
 describe("README examples", () => {
-  const readmeContent = readFileSync(require.resolve("../README.md"), {
+  const readmeContent = readFileSync("./README.md", {
     encoding: "utf-8",
   });
 
@@ -135,7 +135,7 @@ describe("README examples", () => {
 let isBuilt = false;
 async function runBin(...args) {
   if (!isBuilt) {
-    await execFile(require.resolve("../tools/build"));
+    await execFile("./tools/build.js");
     isBuilt = true;
   }
 
@@ -143,7 +143,7 @@ async function runBin(...args) {
 
   function execMain() {
     return new Promise((resolve) => {
-      const path = require.resolve("../main");
+      const path = "./main.cjs";
       const process = spawn("node", [path, ...args]);
 
       const stderr = [];

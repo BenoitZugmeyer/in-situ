@@ -1,6 +1,6 @@
-const {
-  __tests__: { formatContext },
-} = require("../printContext");
+import { __tests__ } from "../printContext.js";
+
+const { formatContext } = __tests__;
 
 test("prints simple source context", () => {
   expect(
