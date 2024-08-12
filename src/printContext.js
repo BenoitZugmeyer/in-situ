@@ -31,7 +31,7 @@ function formatContext(
     ? (code) => {
         try {
           return cardinal.highlight(code)
-        } catch (_) {
+        } catch {
           return code
         }
       }
