@@ -18,14 +18,12 @@
   "dependencies": {
     "cardinal": "^2.1.1",
     "commander": "^2.20.0",
-    "node-fetch": "^2.6.7",
     "source-map": "^0.7.4",
     "terser": "^5.11.0"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.23",
-    "@types/node-fetch": "^2.6.1",
     "esbuild": "^0.14.29",
     "esbuild-jest": "^0.5.0",
     "eslint": "^8.10.0",
