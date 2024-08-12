@@ -10,10 +10,12 @@
   },
   "scripts": {
     "lint": "eslint",
-    "test": "jest",
+    "test": "tools/test.sh",
+    "test:coverage": "tools/test.sh --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info && genhtml lcov.info --output-directory=coverage --rc branch_coverage=1",
+    "test:update-snapshots": "tools/test.sh --test-update-snapshots",
     "typecheck": "tsc",
     "format": "prettier --write .",
-    "check": "jest && tsc && prettier --check . && eslint",
+    "check": "npm test && tsc && prettier --check . && eslint",
     "prepare": "tools/build.js"
   },
   "keywords": [],
@@ -26,23 +28,10 @@
     "terser": "^5.11.0"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.1",
     "@types/node": "^22.2.0",
     "esbuild": "^0.23.0",
-    "esbuild-jest": "^0.5.0",
     "eslint": "^9.9.0",
-    "jest": "^27.5.1",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4"
-  },
-  "jest": {
-    "transform": {
-      "\\.[tj]sx?$": [
-        "esbuild-jest",
-        {
-          "sourcemap": true
-        }
-      ]
-    }
   }
 }

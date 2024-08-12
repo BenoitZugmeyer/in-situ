@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "noEmit": true,
     "allowJs": true,

@@ -1,21 +1,25 @@
+import { test } from "node:test";
+
 import { __tests__ } from "../printContext.js";
 
 const { formatContext } = __tests__;
 
-test("prints simple source context", () => {
-  expect(
+test("prints simple source context", ({ assert }) => {
+  assert.strictEqual(
     formatContext({ content: "a", position: { line: 1, column: 0 } }),
-  ).toBe("a\n^");
+    "a\n^",
+  );
 });
 
-test("context limit", () => {
-  expect(
+test("context limit", ({ assert }) => {
+  assert.strictEqual(
     formatContext({
       content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
       position: { line: 7, column: 0 },
     }),
-  ).toBe("b\nc\nd\ne\nf\ng\n^\nh\ni\nj\nk\nl");
-  expect(
+    "b\nc\nd\ne\nf\ng\n^\nh\ni\nj\nk\nl",
+  );
+  assert.strictEqual(
     formatContext(
       {
         content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
@@ -23,8 +27,9 @@ test("context limit", () => {
       },
       { beforeContext: 0 },
     ),
-  ).toBe("g\n^\nh\ni\nj\nk\nl");
-  expect(
+    "g\n^\nh\ni\nj\nk\nl",
+  );
+  assert.strictEqual(
     formatContext(
       {
         content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
@@ -32,8 +37,9 @@ test("context limit", () => {
       },
       { afterContext: 0 },
     ),
-  ).toBe("b\nc\nd\ne\nf\ng\n^");
-  expect(
+    "b\nc\nd\ne\nf\ng\n^",
+  );
+  assert.strictEqual(
     formatContext(
       {
         content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
@@ -41,41 +47,46 @@ test("context limit", () => {
       },
       { beforeContext: 0, afterContext: 0 },
     ),
-  ).toBe("g\n^");
+    "g\n^",
+  );
 });
 
-test("lastColumn", () => {
-  expect(
+test("lastColumn", ({ assert }) => {
+  assert.strictEqual(
     formatContext({
       content: "abcdefghi",
       position: { line: 1, column: 1, lastColumn: 4 },
     }),
-  ).toBe("abcdefghi\n ^^^");
+    "abcdefghi\n ^^^",
+  );
 });
 
-test("tab", () => {
-  expect(
+test("tab", ({ assert }) => {
+  assert.strictEqual(
     formatContext({
       content: "\t\tabcdefghi",
       position: { line: 1, column: 2 },
     }),
-  ).toBe("\t\tabcdefghi\n                ^");
+    "\t\tabcdefghi\n                ^",
+  );
 });
 
-test("wide character before cursor", () => {
-  expect(
+test("wide character before cursor", ({ assert }) => {
+  assert.strictEqual(
     formatContext({
       content: "杨abcdefghi",
       position: { line: 1, column: 1 },
     }),
-  ).toBe("杨abcdefghi\n  ^");
+    "杨abcdefghi\n  ^",
+  );
 });
 
-test("wide character at cursor", () => {
-  expect(
+test("wide character at cursor", ({ assert }) => {
+  assert.strictEqual(
     formatContext({
       content: "abc杨defghi",
       position: { line: 1, column: 3 },
     }),
-  ).toBe("abc杨defghi\n   ^^");
+    "abc杨defghi\n   ^^",
+  );
 });

@@ -10,6 +10,7 @@ buildSync({
   bundle: true,
   platform: "node",
   target: ["node16"],
-  outfile: "main.cjs",
+  outfile: "main.js",
+  format: "esm",
   external: Object.keys(dependencies),
 });

@@ -1,9 +1,11 @@
+import { test, afterEach, describe, before } from "node:test";
 import { promisify } from "util";
 import childProcess from "child_process";
-const spawn = childProcess.spawn;
-const execFile = promisify(childProcess.execFile);
 import { readFileSync } from "fs";
 import http from "http";
+
+const spawn = childProcess.spawn;
+const execFile = promisify(childProcess.execFile);
 
 // generated with
 // npx terser index.js --mangle -o bundle.min.js -e --toplevel --source-map includeSources
@@ -21,90 +23,112 @@ const sourceMap = JSON.stringify({
   ],
 });
 
-test("fails if no argument is given", async () => {
-  expect(await runBin()).toMatchSnapshot();
+before(async () => {
+  await execFile("./tools/build.js");
 });
 
-test("context options", async () => {
+const cleanupCallbacks = [];
+afterEach(() => {
+  cleanupCallbacks.forEach((cleanupCallback) => cleanupCallback());
+  cleanupCallbacks.length = 0;
+});
+
+test("fails if no argument is given", async ({ assert }) => {
+  assert.snapshot(await runBin());
+});
+
+test("context options", async ({ assert }) => {
   const url = await withServer({
     "/": generatedCode,
   });
-  expect(await runBin(`${url}:1:53`, "-C", "1")).toMatchSnapshot();
-  expect(await runBin(`${url}:1:53`, "-C", "0")).toMatchSnapshot();
-  expect(await runBin(`${url}:1:53`, "-A", "0")).toMatchSnapshot();
-  expect(await runBin(`${url}:1:53`, "-B", "0")).toMatchSnapshot();
+  assert.snapshot(await runBin(`${url}:1:53`, "-C", "1"));
+  assert.snapshot(await runBin(`${url}:1:53`, "-C", "0"));
+  assert.snapshot(await runBin(`${url}:1:53`, "-A", "0"));
+  assert.snapshot(await runBin(`${url}:1:53`, "-B", "0"));
 });
 
 describe("code beautifier", () => {
-  test("beautifies code", async () => {
+  test("beautifies code", async ({ assert }) => {
     const url = await withServer({
       "/": generatedCode,
     });
-    expect(await runBin(`${url}:1:53`)).toMatchSnapshot();
+    assert.snapshot(await runBin(`${url}:1:53`));
   });
 
-  test("fail if the code has a syntax error", async () => {
+  test("fail if the code has a syntax error", async ({ assert }) => {
     const url = await withServer({
       "/": "<html>",
     });
-    expect(await runBin(`${url}:1:53`)).toMatchSnapshot();
+    assert.snapshot(await runBin(`${url}:1:53`));
   });
 });
 
 describe("source map retrieval", () => {
   async function testSourceMapRetrieval(responses) {
     const url = await withServer(responses);
-    expect(await runBin(`${url}/bundle.min.js:1:66`)).toMatchSnapshot();
+    return await runBin(`${url}/bundle.min.js:1:66`);
   }
 
-  test("use the source map from a sourcemap comment", async () => {
-    await testSourceMapRetrieval({
-      "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
-      "/bundle.min.js.map": sourceMap,
-    });
+  test("use the source map from a sourcemap comment", async ({ assert }) => {
+    assert.snapshot(
+      await testSourceMapRetrieval({
+        "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
+        "/bundle.min.js.map": sourceMap,
+      }),
+    );
   });
 
-  test("use the source map from a X-SourceMap header", async () => {
-    await testSourceMapRetrieval({
-      "/bundle.min.js": {
-        body: generatedCode,
-        headers: { "X-SourceMap": "bundle.min.js.map" },
-      },
-      "/bundle.min.js.map": sourceMap,
-    });
+  test("use the source map from a X-SourceMap header", async ({ assert }) => {
+    assert.snapshot(
+      await testSourceMapRetrieval({
+        "/bundle.min.js": {
+          body: generatedCode,
+          headers: { "X-SourceMap": "bundle.min.js.map" },
+        },
+        "/bundle.min.js.map": sourceMap,
+      }),
+    );
   });
 
-  test("use the source map from a SourceMap header", async () => {
-    await testSourceMapRetrieval({
-      "/bundle.min.js": {
-        body: generatedCode,
-        headers: { SourceMap: "bundle.min.js.map" },
-      },
-      "/bundle.min.js.map": sourceMap,
-    });
+  test("use the source map from a SourceMap header", async ({ assert }) => {
+    assert.snapshot(
+      await testSourceMapRetrieval({
+        "/bundle.min.js": {
+          body: generatedCode,
+          headers: { SourceMap: "bundle.min.js.map" },
+        },
+        "/bundle.min.js.map": sourceMap,
+      }),
+    );
   });
 
-  test("use the source map from a data-uri", async () => {
+  test("use the source map from a data-uri", async ({ assert }) => {
     const base64EncodedSourceMap = Buffer.from(sourceMap).toString("base64");
-    await testSourceMapRetrieval({
-      "/bundle.min.js": `${generatedCode}\n//@ sourceMappingURL=data:application/json;charset=utf-8;base64,${base64EncodedSourceMap}`,
-    });
+    assert.snapshot(
+      await testSourceMapRetrieval({
+        "/bundle.min.js": `${generatedCode}\n//@ sourceMappingURL=data:application/json;charset=utf-8;base64,${base64EncodedSourceMap}`,
+      }),
+    );
   });
 
-  test("fallback to beautify if the source map is not found", async () => {
-    await testSourceMapRetrieval({
-      "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
-    });
+  test("fallback to beautify if the source map is not found", async ({
+    assert,
+  }) => {
+    assert.snapshot(
+      await testSourceMapRetrieval({
+        "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
+      }),
+    );
   });
 
-  test("no source map option", async () => {
+  test("no source map option", async ({ assert }) => {
     const url = await withServer({
       "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
       "/bundle.min.js.map": sourceMap,
     });
-    expect(
+    assert.snapshot(
       await runBin(`${url}/bundle.min.js:1:66`, "--no-source-map"),
-    ).toMatchSnapshot();
+    );
   });
 });
 
@@ -118,51 +142,45 @@ describe("README examples", () => {
     /## Example\n\n```\nin-situ (.*?)\n```\n\n```js\n(.*?)```/s,
   );
 
-  test("usage format", async () => {
-    expect(await runBin("--help")).toEqual({
+  test("usage format", async ({ assert }) => {
+    assert.deepStrictEqual(await runBin("--help"), {
       code: 0,
       stdout: usage,
       stderr: "",
     });
   });
 
-  test("example", async () => {
+  test("example", async ({ assert }) => {
     const result = await runBin(...exampleCommand.split(" "));
-    expect(result.stdout.replace(/\t/g, "        ")).toEqual(exampleOutput);
+    assert.deepStrictEqual(
+      result.stdout.replace(/\t/g, "        "),
+      exampleOutput,
+    );
   });
 });
 
-let isBuilt = false;
 async function runBin(...args) {
-  if (!isBuilt) {
-    await execFile("./tools/build.js");
-    isBuilt = true;
-  }
+  return new Promise((resolve) => {
+    const process = spawn("node", ["./main.js", ...args]);
 
-  return execMain();
+    const stderr = [];
+    const stdout = [];
+    process.stdout.on("data", (data) => stdout.push(data));
+    process.stderr.on("data", (data) => stderr.push(data));
 
-  function execMain() {
-    return new Promise((resolve) => {
-      const path = "./main.cjs";
-      const process = spawn("node", [path, ...args]);
-
-      const stderr = [];
-      const stdout = [];
-      process.stdout.on("data", (data) => stdout.push(data));
-      process.stderr.on("data", (data) => stderr.push(data));
-
-      process.on("close", (code) => {
-        resolve({
-          code,
-          stderr: Buffer.concat(stderr).toString("utf-8"),
-          stdout: Buffer.concat(stdout).toString("utf-8"),
-        });
+    process.on("close", (code) => {
+      resolve({
+        code,
+        stderr: Buffer.concat(stderr)
+          .toString("utf-8")
+          .replace(/.*(Deprecation|Experimental)Warning:.*\n/g, "")
+          .replace(/.*\(Use `node --trace-(deprecation|warnings).*\n/g, ""),
+        stdout: Buffer.concat(stdout).toString("utf-8"),
       });
     });
-  }
+  });
 }
 
-const servers = [];
 function withServer(responses) {
   return new Promise((resolve, reject) => {
     const server = http.createServer((request, response) => {
@@ -184,10 +202,6 @@ function withServer(responses) {
     server.listen(0, "127.0.0.1", () => {
       resolve(`http://${server.address().address}:${server.address().port}`);
     });
-    servers.push(server);
+    cleanupCallbacks.push(() => server.close());
   });
 }
-afterEach(() => {
-  servers.forEach((server) => server.close());
-  servers.length = 0;
-});
