@@ -13,7 +13,7 @@ beforeEach(() => {
 
 test("parseArguments", () => {
   expect(() =>
-    parseArguments(`x x`.split(" "))
+    parseArguments(`x x`.split(" ")),
   ).toThrowErrorMatchingInlineSnapshot(`"exit undefined"`);
   expect(stdout.mock.calls[0][0]).toMatchInlineSnapshot(`
     "Usage: in-situ [options] <URL:LINE:COLUMN>
@@ -32,7 +32,7 @@ test("parseArguments", () => {
   `);
 
   expect(() =>
-    parseArguments(`x x --version`.split(" "))
+    parseArguments(`x x --version`.split(" ")),
   ).toThrowErrorMatchingInlineSnapshot(`"exit 0"`);
   expect(stdout).lastCalledWith(expect.stringMatching(/^\d+\.\d+\.\d+.*\n$/));
 
@@ -49,12 +49,12 @@ test("parseArguments", () => {
     expect.objectContaining({
       beforeContext: 2,
       afterContext: 2,
-    })
+    }),
   );
 
   expect(parseArguments(`x x -d https://foo.com:1:1`.split(" "))).toEqual(
     expect.objectContaining({
       debug: true,
-    })
+    }),
   );
 });

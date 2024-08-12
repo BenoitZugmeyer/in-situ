@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { dependencies } = require("../package.json")
+const { dependencies } = require("../package.json");
 
 require("esbuild").buildSync({
   entryPoints: ["./src/main"],
@@ -9,4 +9,4 @@ require("esbuild").buildSync({
   target: ["node16"],
   outfile: "main.js",
   external: Object.keys(dependencies),
-})
+});

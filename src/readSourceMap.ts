@@ -2,7 +2,7 @@ import log from "./log";
 import { File } from "./read";
 
 export default async function readSourceMap(
-  bundle: File
+  bundle: File,
 ): Promise<string | undefined> {
   const sourceMapPath = getSourceMapPath(bundle);
   if (!sourceMapPath) {
@@ -38,7 +38,7 @@ function getSourceMapPath({
   }
 
   const matches = content.match(
-    /\/[*/][@#]\s*sourceMappingURL=(\S+?)\s*(?:\*\/\s*)?$/
+    /\/[*/][@#]\s*sourceMappingURL=(\S+?)\s*(?:\*\/\s*)?$/,
   );
   if (matches) {
     log.debug("Found source map path in code comment");
@@ -48,14 +48,14 @@ function getSourceMapPath({
 
 function getSourceMapFromInlineURI(sourceMapPath: string) {
   const inlineURIMatches = sourceMapPath.match(
-    /^data:application\/json;(?:charset=(.*?);)?base64,/
+    /^data:application\/json;(?:charset=(.*?);)?base64,/,
   );
   if (inlineURIMatches) {
     log.debug("Using inline source maps");
     const [wholeMatch, charset] = inlineURIMatches;
     const rawData = sourceMapPath.slice(wholeMatch.length);
     return Buffer.from(rawData, "base64").toString(
-      (charset as BufferEncoding | undefined) || undefined
+      (charset as BufferEncoding | undefined) || undefined,
     );
   }
 }

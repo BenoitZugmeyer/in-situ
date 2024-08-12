@@ -1,12 +1,13 @@
 # in-situ
 
 `in-situ` is a simple CLI application taking a JavaScript file URL and a line/column position inside
-it.  It will download the JavaScript file, beautify it, and print the context around the given
+it. It will download the JavaScript file, beautify it, and print the context around the given
 position.
 
 ## Installation
 
-Install it globally with your favorite node package manager.  Example:
+Install it globally with your favorite node package manager. Example:
+
 ```
 npm install --global in-situ
 ```
@@ -35,6 +36,7 @@ Options:
 ```
 in-situ https://unpkg.com/preact@10.4.4/dist/preact.min.js:1:3389
 ```
+
 ```js
 File: ../src/diff/props.js
                                 }

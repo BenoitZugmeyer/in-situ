@@ -1,12 +1,12 @@
 const {
   __tests__: { formatContext },
-} = require("../printContext")
+} = require("../printContext");
 
 test("prints simple source context", () => {
   expect(
     formatContext({ content: "a", position: { line: 1, column: 0 } }),
-  ).toBe("a\n^")
-})
+  ).toBe("a\n^");
+});
 
 test("context limit", () => {
   expect(
@@ -14,7 +14,7 @@ test("context limit", () => {
       content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
       position: { line: 7, column: 0 },
     }),
-  ).toBe("b\nc\nd\ne\nf\ng\n^\nh\ni\nj\nk\nl")
+  ).toBe("b\nc\nd\ne\nf\ng\n^\nh\ni\nj\nk\nl");
   expect(
     formatContext(
       {
@@ -23,7 +23,7 @@ test("context limit", () => {
       },
       { beforeContext: 0 },
     ),
-  ).toBe("g\n^\nh\ni\nj\nk\nl")
+  ).toBe("g\n^\nh\ni\nj\nk\nl");
   expect(
     formatContext(
       {
@@ -32,7 +32,7 @@ test("context limit", () => {
       },
       { afterContext: 0 },
     ),
-  ).toBe("b\nc\nd\ne\nf\ng\n^")
+  ).toBe("b\nc\nd\ne\nf\ng\n^");
   expect(
     formatContext(
       {
@@ -41,8 +41,8 @@ test("context limit", () => {
       },
       { beforeContext: 0, afterContext: 0 },
     ),
-  ).toBe("g\n^")
-})
+  ).toBe("g\n^");
+});
 
 test("lastColumn", () => {
   expect(
@@ -50,8 +50,8 @@ test("lastColumn", () => {
       content: "abcdefghi",
       position: { line: 1, column: 1, lastColumn: 4 },
     }),
-  ).toBe("abcdefghi\n ^^^")
-})
+  ).toBe("abcdefghi\n ^^^");
+});
 
 test("tab", () => {
   expect(
@@ -59,8 +59,8 @@ test("tab", () => {
       content: "\t\tabcdefghi",
       position: { line: 1, column: 2 },
     }),
-  ).toBe("\t\tabcdefghi\n                ^")
-})
+  ).toBe("\t\tabcdefghi\n                ^");
+});
 
 test("wide character before cursor", () => {
   expect(
@@ -68,8 +68,8 @@ test("wide character before cursor", () => {
       content: "杨abcdefghi",
       position: { line: 1, column: 1 },
     }),
-  ).toBe("杨abcdefghi\n  ^")
-})
+  ).toBe("杨abcdefghi\n  ^");
+});
 
 test("wide character at cursor", () => {
   expect(
@@ -77,5 +77,5 @@ test("wide character at cursor", () => {
       content: "abc杨defghi",
       position: { line: 1, column: 3 },
     }),
-  ).toBe("abc杨defghi\n   ^^")
-})
+  ).toBe("abc杨defghi\n   ^^");
+});

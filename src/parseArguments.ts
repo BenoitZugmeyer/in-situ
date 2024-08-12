@@ -20,17 +20,17 @@ export default function parseArguments(argv = process.argv): Arguments {
   program.option(
     "-A, --after-context <num>",
     "print <num> lines of trailing context after the selected line",
-    parseInteger
+    parseInteger,
   );
   program.option(
     "-B, --before-context <num>",
     "print <num> lines of leading context before the selected line",
-    parseInteger
+    parseInteger,
   );
   program.option(
     "-C, --context <num>",
     "print <num> lines of leading and trailing context surrounding the selected line",
-    parseInteger
+    parseInteger,
   );
   program.option("--no-source-map", "don't try to use a source map");
   program.option("-d, --debug", "output extra debugging");
@@ -69,7 +69,7 @@ function parseInteger(s: string): number {
   const n = Number(s);
   if ((n | 0) !== n || n < 0) {
     throw new CLIError(
-      `${s} should be a positive integer. Use --help for help.`
+      `${s} should be a positive integer. Use --help for help.`,
     );
   }
   return n;

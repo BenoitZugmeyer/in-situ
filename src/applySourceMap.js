@@ -1,12 +1,12 @@
-import readSourceMap from "./readSourceMap"
+import readSourceMap from "./readSourceMap";
 
-const { SourceMapConsumer } = require("source-map")
+const { SourceMapConsumer } = require("source-map");
 
-const log = require("./log")
+const log = require("./log");
 
 module.exports = async function applySourceMap({ position }, bundle) {
-  const sourceMapContent = await readSourceMap(bundle)
-  if (!sourceMapContent) return
+  const sourceMapContent = await readSourceMap(bundle);
+  if (!sourceMapContent) return;
 
   return await SourceMapConsumer.with(
     sourceMapContent,
@@ -15,27 +15,27 @@ module.exports = async function applySourceMap({ position }, bundle) {
       const mappedPosition = consumer.originalPositionFor({
         line: position.line,
         column: position.column,
-      })
+      });
       if (!mappedPosition.source) {
-        log.error("Failed to resolve the position with source map")
-        return
+        log.error("Failed to resolve the position with source map");
+        return;
       }
 
-      const fileName = mappedPosition.source
+      const fileName = mappedPosition.source;
       const content = consumer.sourceContentFor(
         fileName,
         true, // return null on missing
-      )
+      );
       if (!content) {
-        log.error("Source map doesn't include the source content")
-        return { fileName }
+        log.error("Source map doesn't include the source content");
+        return { fileName };
       }
 
       return {
         content,
         position: mappedPosition,
         fileName,
-      }
+      };
     },
-  )
-}
+  );
+};

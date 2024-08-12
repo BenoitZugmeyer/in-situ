@@ -1,1 +1,1 @@
-module.exports = class CLIError extends Error {}
+module.exports = class CLIError extends Error {};
