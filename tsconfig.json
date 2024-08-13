@@ -8,6 +8,7 @@
     "strict": true,
     "resolveJsonModule": true,
     "module": "es2022",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "target": "es2022"
   }
 }

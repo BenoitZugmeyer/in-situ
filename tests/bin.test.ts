@@ -1,8 +1,9 @@
-import { test, afterEach, describe, before } from "node:test";
+import { test, afterEach, describe, before, type TestContext } from "node:test";
 import { promisify } from "util";
 import childProcess from "child_process";
 import { readFileSync } from "fs";
 import http from "http";
+import type { AddressInfo } from "net";
 
 const spawn = childProcess.spawn;
 const execFile = promisify(childProcess.execFile);
@@ -27,14 +28,14 @@ before(async () => {
   await execFile("./tools/build.js");
 });
 
-const cleanupCallbacks = [];
+const cleanupCallbacks: Array<() => void> = [];
 afterEach(() => {
   cleanupCallbacks.forEach((cleanupCallback) => cleanupCallback());
   cleanupCallbacks.length = 0;
 });
 
-test("fails if no argument is given", async ({ assert }) => {
-  assert.deepStrictEqual(await runBin(), {
+test("fails if no argument is given", async (t: TestContext) => {
+  t.assert.deepStrictEqual(await runBin(), {
     code: 0,
     stderr: ``,
     stdout:
@@ -53,11 +54,11 @@ test("fails if no argument is given", async ({ assert }) => {
   });
 });
 
-test("context options", async ({ assert }) => {
+test("context options", async (t: TestContext) => {
   const url = await withServer({
     "/": generatedCode,
   });
-  assert.deepStrictEqual(await runBin(`${url}:1:53`, "-C", "1"), {
+  t.assert.deepStrictEqual(await runBin(`${url}:1:53`, "-C", "1"), {
     code: 0,
     stderr: "Fetching source code...\nBeautifying source code...\n",
     stdout:
@@ -66,12 +67,12 @@ test("context options", async ({ assert }) => {
       "                      ^\n" +
       "    window.杨 = o;\n",
   });
-  assert.deepStrictEqual(await runBin(`${url}:1:53`, "-C", "0"), {
+  t.assert.deepStrictEqual(await runBin(`${url}:1:53`, "-C", "0"), {
     code: 0,
     stderr: "Fetching source code...\nBeautifying source code...\n",
     stdout: "    console.log(`\\t`, o);\n" + "                      ^\n",
   });
-  assert.deepStrictEqual(await runBin(`${url}:1:53`, "-A", "0"), {
+  t.assert.deepStrictEqual(await runBin(`${url}:1:53`, "-A", "0"), {
     code: 0,
     stderr: "Fetching source code...\nBeautifying source code...\n",
     stdout:
@@ -80,7 +81,7 @@ test("context options", async ({ assert }) => {
       "    console.log(`\\t`, o);\n" +
       "                      ^\n",
   });
-  assert.deepStrictEqual(await runBin(`${url}:1:53`, "-B", "0"), {
+  t.assert.deepStrictEqual(await runBin(`${url}:1:53`, "-B", "0"), {
     code: 0,
     stderr: "Fetching source code...\nBeautifying source code...\n",
     stdout:
@@ -89,11 +90,11 @@ test("context options", async ({ assert }) => {
 });
 
 describe("code beautifier", () => {
-  test("beautifies code", async ({ assert }) => {
+  test("beautifies code", async (t: TestContext) => {
     const url = await withServer({
       "/": generatedCode,
     });
-    assert.deepStrictEqual(await runBin(`${url}:1:53`), {
+    t.assert.deepStrictEqual(await runBin(`${url}:1:53`), {
       code: 0,
       stderr: "Fetching source code...\nBeautifying source code...\n",
       stdout:
@@ -106,11 +107,11 @@ describe("code beautifier", () => {
     });
   });
 
-  test("fail if the code has a syntax error", async ({ assert }) => {
+  test("fail if the code has a syntax error", async (t: TestContext) => {
     const url = await withServer({
       "/": "<html>",
     });
-    assert.deepStrictEqual(await runBin(`${url}:1:53`), {
+    t.assert.deepStrictEqual(await runBin(`${url}:1:53`), {
       code: 1,
       stderr:
         "Fetching source code...\n" +
@@ -122,13 +123,13 @@ describe("code beautifier", () => {
 });
 
 describe("source map retrieval", () => {
-  async function testSourceMapRetrieval(responses) {
+  async function testSourceMapRetrieval(responses: MockResponses) {
     const url = await withServer(responses);
     return await runBin(`${url}/bundle.min.js:1:64`);
   }
 
-  test("use the source map from a sourcemap comment", async ({ assert }) => {
-    assert.deepStrictEqual(
+  test("use the source map from a sourcemap comment", async (t: TestContext) => {
+    t.assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
         "/bundle.min.js.map": sourceMap,
@@ -147,8 +148,8 @@ describe("source map retrieval", () => {
     );
   });
 
-  test("use the source map from a X-SourceMap header", async ({ assert }) => {
-    assert.deepStrictEqual(
+  test("use the source map from a X-SourceMap header", async (t: TestContext) => {
+    t.assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": {
           body: generatedCode,
@@ -170,8 +171,8 @@ describe("source map retrieval", () => {
     );
   });
 
-  test("use the source map from a SourceMap header", async ({ assert }) => {
-    assert.deepStrictEqual(
+  test("use the source map from a SourceMap header", async (t: TestContext) => {
+    t.assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": {
           body: generatedCode,
@@ -193,9 +194,9 @@ describe("source map retrieval", () => {
     );
   });
 
-  test("use the source map from a data-uri", async ({ assert }) => {
+  test("use the source map from a data-uri", async (t: TestContext) => {
     const base64EncodedSourceMap = Buffer.from(sourceMap).toString("base64");
-    assert.deepStrictEqual(
+    t.assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": `${generatedCode}\n//@ sourceMappingURL=data:application/json;charset=utf-8;base64,${base64EncodedSourceMap}`,
       }),
@@ -213,10 +214,8 @@ describe("source map retrieval", () => {
     );
   });
 
-  test("fallback to beautify if the source map is not found", async ({
-    assert,
-  }) => {
-    assert.deepStrictEqual(
+  test("fallback to beautify if the source map is not found", async (t: TestContext) => {
+    t.assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
       }),
@@ -238,12 +237,12 @@ describe("source map retrieval", () => {
     );
   });
 
-  test("no source map option", async ({ assert }) => {
+  test("no source map option", async (t: TestContext) => {
     const url = await withServer({
       "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
       "/bundle.min.js.map": sourceMap,
     });
-    assert.deepStrictEqual(
+    t.assert.deepStrictEqual(
       await runBin(`${url}/bundle.min.js:1:64`, "--no-source-map"),
       {
         code: 0,
@@ -269,34 +268,36 @@ describe("README examples", () => {
     encoding: "utf-8",
   });
 
-  const usage = readmeContent.match(/## Usage\n\n```\n(.*?)```/s)[1];
+  const usage = readmeContent.match(/## Usage\n\n```\n(.*?)```/s)![1];
   const [_, exampleCommand, exampleOutput] = readmeContent.match(
     /## Example\n\n```\nin-situ (.*?)\n```\n\n```js\n(.*?)```/s,
-  );
+  )!;
 
-  test("usage format", async ({ assert }) => {
-    assert.deepStrictEqual(await runBin("--help"), {
+  test("usage format", async (t: TestContext) => {
+    t.assert.deepStrictEqual(await runBin("--help"), {
       code: 0,
       stdout: usage,
       stderr: "",
     });
   });
 
-  test("example", async ({ assert }) => {
+  test("example", async (t: TestContext) => {
     const result = await runBin(...exampleCommand.split(" "));
-    assert.deepStrictEqual(
+    t.assert.deepStrictEqual(
       result.stdout.replace(/\t/g, "        "),
       exampleOutput,
     );
   });
 });
 
-async function runBin(...args) {
+async function runBin(
+  ...args: string[]
+): Promise<{ code: number | null; stderr: string; stdout: string }> {
   return new Promise((resolve) => {
     const process = spawn("node", ["./main.js", ...args]);
 
-    const stderr = [];
-    const stdout = [];
+    const stderr: Buffer[] = [];
+    const stdout: Buffer[] = [];
     process.stdout.on("data", (data) => stdout.push(data));
     process.stderr.on("data", (data) => stderr.push(data));
 
@@ -313,11 +314,16 @@ async function runBin(...args) {
   });
 }
 
-function withServer(responses) {
+type MockResponses = Record<
+  string,
+  string | { body: string; headers: Record<string, string> }
+>;
+
+function withServer(responses: MockResponses) {
   return new Promise((resolve, reject) => {
     const server = http.createServer((request, response) => {
-      if (request.url in responses) {
-        const r = responses[request.url];
+      if (request.url! in responses) {
+        const r = responses[request.url!];
         if (typeof r === "string") {
           response.writeHead(200, "OK");
           response.end(r);
@@ -332,7 +338,8 @@ function withServer(responses) {
     });
     server.on("error", reject);
     server.listen(0, "127.0.0.1", () => {
-      resolve(`http://${server.address().address}:${server.address().port}`);
+      const { address, port } = server.address() as AddressInfo;
+      resolve(`http://${address}:${port}`);
     });
     cleanupCallbacks.push(() => server.close());
   });
