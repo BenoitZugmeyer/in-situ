@@ -124,7 +124,7 @@ describe("code beautifier", () => {
 describe("source map retrieval", () => {
   async function testSourceMapRetrieval(responses) {
     const url = await withServer(responses);
-    return await runBin(`${url}/bundle.min.js:1:66`);
+    return await runBin(`${url}/bundle.min.js:1:64`);
   }
 
   test("use the source map from a sourcemap comment", async ({ assert }) => {
@@ -244,7 +244,7 @@ describe("source map retrieval", () => {
       "/bundle.min.js.map": sourceMap,
     });
     assert.deepStrictEqual(
-      await runBin(`${url}/bundle.min.js:1:66`, "--no-source-map"),
+      await runBin(`${url}/bundle.min.js:1:64`, "--no-source-map"),
       {
         code: 0,
         stderr: `\

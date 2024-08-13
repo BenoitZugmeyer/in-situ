@@ -1,5 +1,5 @@
 import { minify } from "terser";
-import { SourceMapConsumer } from "source-map";
+import { TraceMap, generatedPositionFor } from "@jridgewell/trace-mapping";
 
 import CLIError from "./CLIError.js";
 import log from "./log.js";
@@ -17,17 +17,15 @@ export default async function applyBeautify(source) {
   } catch (error) {
     throw new CLIError(`Failed to parse response: ${error}`);
   }
-  if (uglifyResult.error) {
-    throw new CLIError(`Failed to parse response: ${uglifyResult.error}`);
-  }
 
-  return SourceMapConsumer.with(uglifyResult.map, null, (consumer) => ({
+  const map = new TraceMap(uglifyResult.map);
+  return {
     fileName: source.fileName,
     content: uglifyResult.code,
-    position: consumer.generatedPositionFor({
+    position: generatedPositionFor(map, {
       line: source.position.line,
       column: source.position.column,
-      source: consumer.sources[0],
+      source: map.sources[0],
     }),
-  }));
+  };
 }
