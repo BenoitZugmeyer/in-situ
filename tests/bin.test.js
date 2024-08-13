@@ -34,17 +34,58 @@ afterEach(() => {
 });
 
 test("fails if no argument is given", async ({ assert }) => {
-  assert.snapshot(await runBin());
+  assert.deepStrictEqual(await runBin(), {
+    code: 0,
+    stderr: ``,
+    stdout:
+      "Usage: in-situ [options] <URL:LINE:COLUMN>\n" +
+      "\n" +
+      "Download, beautify and print lines from a minified JavaScript source\n" +
+      "\n" +
+      "Options:\n" +
+      "  -A, --after-context <num>   print <num> lines of trailing context after the selected line\n" +
+      "  -B, --before-context <num>  print <num> lines of leading context before the selected line\n" +
+      "  -C, --context <num>         print <num> lines of leading and trailing context surrounding the selected line\n" +
+      "  --no-source-map             don't try to use a source map\n" +
+      "  -d, --debug                 output extra debugging\n" +
+      "  -V, --version               output the version number\n" +
+      "  -h, --help                  output usage information\n",
+  });
 });
 
 test("context options", async ({ assert }) => {
   const url = await withServer({
     "/": generatedCode,
   });
-  assert.snapshot(await runBin(`${url}:1:53`, "-C", "1"));
-  assert.snapshot(await runBin(`${url}:1:53`, "-C", "0"));
-  assert.snapshot(await runBin(`${url}:1:53`, "-A", "0"));
-  assert.snapshot(await runBin(`${url}:1:53`, "-B", "0"));
+  assert.deepStrictEqual(await runBin(`${url}:1:53`, "-C", "1"), {
+    code: 0,
+    stderr: "Fetching source code...\nBeautifying source code...\n",
+    stdout:
+      "    const o = document.title;\n" +
+      "    console.log(`\\t`, o);\n" +
+      "                      ^\n" +
+      "    window.杨 = o;\n",
+  });
+  assert.deepStrictEqual(await runBin(`${url}:1:53`, "-C", "0"), {
+    code: 0,
+    stderr: "Fetching source code...\nBeautifying source code...\n",
+    stdout: "    console.log(`\\t`, o);\n" + "                      ^\n",
+  });
+  assert.deepStrictEqual(await runBin(`${url}:1:53`, "-A", "0"), {
+    code: 0,
+    stderr: "Fetching source code...\nBeautifying source code...\n",
+    stdout:
+      "(function() {\n" +
+      "    const o = document.title;\n" +
+      "    console.log(`\\t`, o);\n" +
+      "                      ^\n",
+  });
+  assert.deepStrictEqual(await runBin(`${url}:1:53`, "-B", "0"), {
+    code: 0,
+    stderr: "Fetching source code...\nBeautifying source code...\n",
+    stdout:
+      "    console.log(`\\t`, o);\n                      ^\n    window.杨 = o;\n})();\n",
+  });
 });
 
 describe("code beautifier", () => {
@@ -52,14 +93,31 @@ describe("code beautifier", () => {
     const url = await withServer({
       "/": generatedCode,
     });
-    assert.snapshot(await runBin(`${url}:1:53`));
+    assert.deepStrictEqual(await runBin(`${url}:1:53`), {
+      code: 0,
+      stderr: "Fetching source code...\nBeautifying source code...\n",
+      stdout:
+        "(function() {\n" +
+        "    const o = document.title;\n" +
+        "    console.log(`\\t`, o);\n" +
+        "                      ^\n" +
+        "    window.杨 = o;\n" +
+        "})();\n",
+    });
   });
 
   test("fail if the code has a syntax error", async ({ assert }) => {
     const url = await withServer({
       "/": "<html>",
     });
-    assert.snapshot(await runBin(`${url}:1:53`));
+    assert.deepStrictEqual(await runBin(`${url}:1:53`), {
+      code: 1,
+      stderr:
+        "Fetching source code...\n" +
+        "Beautifying source code...\n" +
+        "Failed to parse response: SyntaxError: Unexpected token: operator (<)\n",
+      stdout: "",
+    });
   });
 });
 
@@ -70,16 +128,27 @@ describe("source map retrieval", () => {
   }
 
   test("use the source map from a sourcemap comment", async ({ assert }) => {
-    assert.snapshot(
+    assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
         "/bundle.min.js.map": sourceMap,
       }),
+      {
+        code: 0,
+        stderr: "Fetching source code...\nFetching source maps...\n",
+        stdout:
+          "File: index.js\n" +
+          "const title = document.title\n" +
+          "console.log(`\t`, title)\n" +
+          "window.杨 = title\n" +
+          "            ^\n" +
+          "\n",
+      },
     );
   });
 
   test("use the source map from a X-SourceMap header", async ({ assert }) => {
-    assert.snapshot(
+    assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": {
           body: generatedCode,
@@ -87,11 +156,22 @@ describe("source map retrieval", () => {
         },
         "/bundle.min.js.map": sourceMap,
       }),
+      {
+        code: 0,
+        stderr: "Fetching source code...\nFetching source maps...\n",
+        stdout:
+          "File: index.js\n" +
+          "const title = document.title\n" +
+          "console.log(`\t`, title)\n" +
+          "window.杨 = title\n" +
+          "            ^\n" +
+          "\n",
+      },
     );
   });
 
   test("use the source map from a SourceMap header", async ({ assert }) => {
-    assert.snapshot(
+    assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": {
           body: generatedCode,
@@ -99,25 +179,62 @@ describe("source map retrieval", () => {
         },
         "/bundle.min.js.map": sourceMap,
       }),
+      {
+        code: 0,
+        stderr: "Fetching source code...\nFetching source maps...\n",
+        stdout:
+          "File: index.js\n" +
+          "const title = document.title\n" +
+          "console.log(`\t`, title)\n" +
+          "window.杨 = title\n" +
+          "            ^\n" +
+          "\n",
+      },
     );
   });
 
   test("use the source map from a data-uri", async ({ assert }) => {
     const base64EncodedSourceMap = Buffer.from(sourceMap).toString("base64");
-    assert.snapshot(
+    assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": `${generatedCode}\n//@ sourceMappingURL=data:application/json;charset=utf-8;base64,${base64EncodedSourceMap}`,
       }),
+      {
+        code: 0,
+        stderr: "Fetching source code...\n",
+        stdout:
+          "File: index.js\n" +
+          "const title = document.title\n" +
+          "console.log(`\t`, title)\n" +
+          "window.杨 = title\n" +
+          "            ^\n" +
+          "\n",
+      },
     );
   });
 
   test("fallback to beautify if the source map is not found", async ({
     assert,
   }) => {
-    assert.snapshot(
+    assert.deepStrictEqual(
       await testSourceMapRetrieval({
         "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
       }),
+      {
+        code: 0,
+        stderr:
+          "Fetching source code...\n" +
+          "Fetching source maps...\n" +
+          "Failed to fetch source map: Error: Failed to fetch: Not found\n" +
+          "Beautifying source code...\n",
+        stdout:
+          "(function() {\n" +
+          "    const o = document.title;\n" +
+          "    console.log(`\\t`, o);\n" +
+          "    window.杨 = o;\n" +
+          "                ^\n" +
+          "})();\n",
+      },
     );
   });
 
@@ -126,8 +243,23 @@ describe("source map retrieval", () => {
       "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
       "/bundle.min.js.map": sourceMap,
     });
-    assert.snapshot(
+    assert.deepStrictEqual(
       await runBin(`${url}/bundle.min.js:1:66`, "--no-source-map"),
+      {
+        code: 0,
+        stderr: `\
+Fetching source code...
+Beautifying source code...
+`,
+        stdout: `\
+(function() {
+    const o = document.title;
+    console.log(\`\\t\`, o);
+    window.杨 = o;
+                ^
+})();
+`,
+      },
     );
   });
 });
