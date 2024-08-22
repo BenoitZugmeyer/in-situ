@@ -1,8 +1,8 @@
 import log from "./log.js";
-import type { File } from "./read.ts";
+import { ReadResult } from "./read.js";
 
 export default async function readSourceMap(
-  bundle: File,
+  bundle: ReadResult,
 ): Promise<string | undefined> {
   const sourceMapPath = getSourceMapPath(bundle);
   if (!sourceMapPath) {
@@ -26,7 +26,7 @@ export default async function readSourceMap(
 function getSourceMapPath({
   headers,
   content,
-}: Pick<File, "headers" | "content">) {
+}: Pick<ReadResult, "headers" | "content">) {
   if (headers.has("sourcemap")) {
     log.debug("Found source map path in 'sourcemap' header");
     return headers.get("sourcemap");

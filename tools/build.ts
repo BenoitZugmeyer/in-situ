@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S node --experimental-strip-types
 
 import { buildSync } from "esbuild";
 import { readFileSync } from "fs";

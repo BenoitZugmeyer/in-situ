@@ -3,7 +3,7 @@ const RESTORE_CURSOR_POSITION = "\x1b[u";
 const ERASE_LINE = "\x1b[K";
 
 const isTTY = process.stderr.isTTY;
-let status;
+let status: string | undefined;
 
 export default {
   debug: makeLogFunction(),
@@ -11,21 +11,27 @@ export default {
   status: setStatus,
 };
 
+interface LogFunction {
+  (message: string): void;
+  disabled: boolean;
+}
+
 function makeLogFunction() {
-  function log(message) {
+  const log: LogFunction = (message) => {
     if (!log.disabled) {
       clearStatus();
       process.stderr.write(String(message));
       process.stderr.write("\n");
       restoreStatus();
     }
-  }
+  };
+  log.disabled = false;
   return log;
 }
 
-function setStatus(status_) {
+function setStatus(newStatus?: string) {
   clearStatus();
-  status = status_;
+  status = newStatus;
   printStatus();
 }
 

@@ -1,20 +1,11 @@
 import commander from "commander";
 import { readFileSync } from "fs";
 
-import CLIError from "./CLIError.js";
-import type { Position } from "./types.ts";
+import CLIError from "./CLIError.ts";
+import type { Configuration } from "./types.ts";
 import { fileURLToPath } from "node:url";
 
-type Arguments = {
-  debug: boolean;
-  sourceURL: string;
-  position: Position;
-  useSourceMap: boolean;
-  beforeContext: number;
-  afterContext: number;
-};
-
-export default function parseArguments(argv = process.argv): Arguments {
+export default function parseArguments(argv = process.argv): Configuration {
   const pkg = getPackageInfos();
   const program = new commander.Command();
   program.name(pkg.name);

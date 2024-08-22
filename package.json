@@ -16,7 +16,7 @@
     "typecheck": "tsc",
     "format": "prettier --write .",
     "check": "npm test && tsc && prettier --check . && eslint",
-    "prepare": "tools/build.js"
+    "prepare": "tools/build.ts"
   },
   "keywords": [],
   "author": "Benoît Zugmeyer <bzugmeyer@gmail.com>",
@@ -28,6 +28,7 @@
     "terser": "^5.31.6"
   },
   "devDependencies": {
+    "@types/cardinal": "^2.1.1",
     "@types/node": "^22.2.0",
     "esbuild": "^0.23.0",
     "eslint": "^9.9.0",

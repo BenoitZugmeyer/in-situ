@@ -1,27 +1,36 @@
-import { test } from "node:test";
+import { test, type TestContext } from "node:test";
 
-import { __tests__ } from "../printContext.js";
+import { __tests__ } from "../printContext.ts";
 
 const { formatContext } = __tests__;
 
-test("prints simple source context", ({ assert }) => {
-  assert.strictEqual(
-    formatContext({ content: "a", position: { line: 1, column: 0 } }),
+test("prints simple source context", (t: TestContext) => {
+  t.assert.strictEqual(
+    formatContext({
+      type: "resolved",
+      fileName: undefined,
+      content: "a",
+      position: { line: 1, column: 0 },
+    }),
     "a\n^",
   );
 });
 
-test("context limit", ({ assert }) => {
-  assert.strictEqual(
+test("context limit", (t: TestContext) => {
+  t.assert.strictEqual(
     formatContext({
+      type: "resolved",
+      fileName: undefined,
       content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
       position: { line: 7, column: 0 },
     }),
     "b\nc\nd\ne\nf\ng\n^\nh\ni\nj\nk\nl",
   );
-  assert.strictEqual(
+  t.assert.strictEqual(
     formatContext(
       {
+        type: "resolved",
+        fileName: undefined,
         content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
         position: { line: 7, column: 0 },
       },
@@ -29,9 +38,11 @@ test("context limit", ({ assert }) => {
     ),
     "g\n^\nh\ni\nj\nk\nl",
   );
-  assert.strictEqual(
+  t.assert.strictEqual(
     formatContext(
       {
+        type: "resolved",
+        fileName: undefined,
         content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
         position: { line: 7, column: 0 },
       },
@@ -39,9 +50,11 @@ test("context limit", ({ assert }) => {
     ),
     "b\nc\nd\ne\nf\ng\n^",
   );
-  assert.strictEqual(
+  t.assert.strictEqual(
     formatContext(
       {
+        type: "resolved",
+        fileName: undefined,
         content: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm",
         position: { line: 7, column: 0 },
       },
@@ -51,9 +64,11 @@ test("context limit", ({ assert }) => {
   );
 });
 
-test("lastColumn", ({ assert }) => {
-  assert.strictEqual(
+test("lastColumn", (t: TestContext) => {
+  t.assert.strictEqual(
     formatContext({
+      type: "resolved",
+      fileName: undefined,
       content: "abcdefghi",
       position: { line: 1, column: 1, lastColumn: 4 },
     }),
@@ -61,9 +76,11 @@ test("lastColumn", ({ assert }) => {
   );
 });
 
-test("tab", ({ assert }) => {
-  assert.strictEqual(
+test("tab", (t: TestContext) => {
+  t.assert.strictEqual(
     formatContext({
+      type: "resolved",
+      fileName: undefined,
       content: "\t\tabcdefghi",
       position: { line: 1, column: 2 },
     }),
@@ -71,9 +88,11 @@ test("tab", ({ assert }) => {
   );
 });
 
-test("wide character before cursor", ({ assert }) => {
-  assert.strictEqual(
+test("wide character before cursor", (t: TestContext) => {
+  t.assert.strictEqual(
     formatContext({
+      type: "resolved",
+      fileName: undefined,
       content: "杨abcdefghi",
       position: { line: 1, column: 1 },
     }),
@@ -81,9 +100,11 @@ test("wide character before cursor", ({ assert }) => {
   );
 });
 
-test("wide character at cursor", ({ assert }) => {
-  assert.strictEqual(
+test("wide character at cursor", (t: TestContext) => {
+  t.assert.strictEqual(
     formatContext({
+      type: "resolved",
+      fileName: undefined,
       content: "abc杨defghi",
       position: { line: 1, column: 3 },
     }),

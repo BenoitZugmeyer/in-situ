@@ -1,3 +1,5 @@
+#!/usr/bin/env -S node --experimental-strip-types
+
 import { execSync as exec } from "child_process";
 import { readFileSync as read } from "fs";
 
@@ -16,7 +18,7 @@ if (!versionMatches) {
   error(`Tag '${tag}' doesn't look like a version`);
 }
 
-const [_, version, stableVersion, channel = "latest"] = versionMatches;
+const [_, version, stableVersion, channel = "latest"] = versionMatches!;
 
 // Verify last commit message
 const message = exec('git log -1 --pretty="format:%s\n%b"').toString().trim();
@@ -29,7 +31,7 @@ if (exec("git status --porcelain").length) {
   error("Repository should be clean");
 }
 
-const firstChangelogLine = read("CHANGELOG.md").toString().match(/^.+$/m)[0];
+const firstChangelogLine = read("CHANGELOG.md").toString().match(/^.+$/m)![0];
 const date =
   channel !== "latest" ? "UNRELEASED" : new Date().toISOString().slice(0, 10);
 const expectedFirstChangelogLine = `${date} v${stableVersion}`;
@@ -51,7 +53,7 @@ const STATE_TARBALL_DETAILS = 2;
 const STATE_TARBALL_FILENAME = 3;
 
 let state = STATE_INIT;
-const content = new Set();
+const content = new Set<string>();
 let tarballFileName;
 
 for (let line of packed) {
@@ -66,7 +68,7 @@ for (let line of packed) {
       if (line === "=== Tarball Details ===") {
         state = STATE_TARBALL_DETAILS;
       } else {
-        content.add(line.match(/.*?\s+(.*)$/)[1]);
+        content.add(line.match(/.*?\s+(.*)$/)![1]);
       }
       break;
     case STATE_TARBALL_DETAILS:
@@ -105,7 +107,7 @@ exec(`npm publish ${tarballFileName} --tag ${channel}`, {
   stdio: "inherit",
 });
 
-function error(message) {
+function error(message: string) {
   console.error(message);
   process.exit(1);
 }

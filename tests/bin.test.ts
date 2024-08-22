@@ -25,7 +25,7 @@ const sourceMap = JSON.stringify({
 });
 
 before(async () => {
-  await execFile("./tools/build.js");
+  await execFile("./tools/build.ts");
 });
 
 const cleanupCallbacks: Array<() => void> = [];
