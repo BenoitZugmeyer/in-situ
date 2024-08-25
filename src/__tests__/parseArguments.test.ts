@@ -1,5 +1,5 @@
 import { test, mock } from "node:test";
-import type { TestContext, TestContextAssert } from "node:test";
+import type { TestContext } from "node:test";
 
 import parseArguments from "../parseArguments.ts";
 

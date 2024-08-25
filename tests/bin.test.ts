@@ -269,7 +269,7 @@ describe("README examples", () => {
   });
 
   const usage = readmeContent.match(/## Usage\n\n```\n(.*?)```/s)![1];
-  const [_, exampleCommand, exampleOutput] = readmeContent.match(
+  const [, exampleCommand, exampleOutput] = readmeContent.match(
     /## Example\n\n```\nin-situ (.*?)\n```\n\n```js\n(.*?)```/s,
   )!;
 

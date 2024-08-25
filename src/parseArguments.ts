@@ -40,7 +40,7 @@ export default function parseArguments(argv = process.argv): Configuration {
     throw "unreachable";
   }
 
-  const [_, sourceURL, line, column] = matches;
+  const [, sourceURL, line, column] = matches;
 
   const opts = program.opts();
   const beforeContext =

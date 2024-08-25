@@ -7,7 +7,7 @@ import applySourceMap from "./applySourceMap.js";
 import printContext from "./printContext.js";
 import log from "./log.js";
 import read from "./read.ts";
-import { ApplyResult, InputSource } from "./types.ts";
+import { ApplyResult } from "./types.ts";
 
 main().catch((e) => {
   if (e instanceof CLIError) {

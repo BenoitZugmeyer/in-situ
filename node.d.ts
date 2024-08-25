@@ -4,7 +4,7 @@ declare module "node:test" {
   function test(name?: string, fn?: TestFn): Promise<void>;
   type TestFn = (
     t: TestContext,
-    done: (result?: any) => void,
+    done: (result?: unknown) => void,
   ) => void | Promise<void>;
   export interface TestContext {
     assert: TestContextAssert;
