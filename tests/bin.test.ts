@@ -11,7 +11,7 @@ const execFile = promisify(childProcess.execFile);
 // generated with
 // npx terser index.js --mangle -o bundle.min.js -e --toplevel --source-map includeSources
 const generatedCode =
-  "(function(){const o=document.title;console.log(`\t`,o);window.杨=o})();";
+  "(function(){const o=document.title;console.log('\t',o);window.杨=o})();";
 
 const sourceMap = JSON.stringify({
   version: 3,
@@ -20,7 +20,7 @@ const sourceMap = JSON.stringify({
   names: ["title", "document", "console", "log", "window", "杨"],
   mappings: "YAAA,MAAMA,EAAQC,SAASD,MACvBE,QAAQC,IAAI,KAAKH,GACjBI,OAAOC,EAAIL",
   sourcesContent: [
-    "const title = document.title\nconsole.log(`\t`, title)\nwindow.杨 = title\n",
+    "const title = document.title\nconsole.log('\t', title)\nwindow.杨 = title\n",
   ],
 });
 
@@ -38,19 +38,20 @@ test("fails if no argument is given", async (t: TestContext) => {
   t.assert.deepStrictEqual(await runBin(), {
     code: 0,
     stderr: ``,
-    stdout:
-      "Usage: in-situ [options] <URL:LINE:COLUMN>\n" +
-      "\n" +
-      "Download, beautify and print lines from a minified JavaScript source\n" +
-      "\n" +
-      "Options:\n" +
-      "  -A, --after-context <num>   print <num> lines of trailing context after the selected line\n" +
-      "  -B, --before-context <num>  print <num> lines of leading context before the selected line\n" +
-      "  -C, --context <num>         print <num> lines of leading and trailing context surrounding the selected line\n" +
-      "  --no-source-map             don't try to use a source map\n" +
-      "  -d, --debug                 output extra debugging\n" +
-      "  -V, --version               output the version number\n" +
-      "  -h, --help                  output usage information\n",
+    stdout: r`
+      Usage: in-situ [options] <URL:LINE:COLUMN>
+
+      Download, beautify and print lines from a minified JavaScript source
+
+      Options:
+        -A, --after-context <num>   print <num> lines of trailing context after the selected line
+        -B, --before-context <num>  print <num> lines of leading context before the selected line
+        -C, --context <num>         print <num> lines of leading and trailing context surrounding the selected line
+        --no-source-map             don't try to use a source map
+        -d, --debug                 output extra debugging
+        -V, --version               output the version number
+        -h, --help                  output usage information
+      `,
   });
 });
 
@@ -60,32 +61,53 @@ test("context options", async (t: TestContext) => {
   });
   t.assert.deepStrictEqual(await runBin(`${url}:1:53`, "-C", "1"), {
     code: 0,
-    stderr: "Fetching source code...\nBeautifying source code...\n",
-    stdout:
-      "    const o = document.title;\n" +
-      "    console.log(`\\t`, o);\n" +
-      "                      ^\n" +
-      "    window.杨 = o;\n",
+    stderr: r`
+      Fetching source code...
+      Beautifying source code...
+      `,
+    stdout: r(6)`
+          const o = document.title;
+          console.log("\t", o);
+                            ^
+          window.杨 = o;
+      `,
   });
   t.assert.deepStrictEqual(await runBin(`${url}:1:53`, "-C", "0"), {
     code: 0,
-    stderr: "Fetching source code...\nBeautifying source code...\n",
-    stdout: "    console.log(`\\t`, o);\n" + "                      ^\n",
+    stderr: r`
+      Fetching source code...
+      Beautifying source code...
+      `,
+    stdout: r(6)`
+          console.log("\t", o);
+                            ^
+      `,
   });
   t.assert.deepStrictEqual(await runBin(`${url}:1:53`, "-A", "0"), {
     code: 0,
-    stderr: "Fetching source code...\nBeautifying source code...\n",
-    stdout:
-      "(function() {\n" +
-      "    const o = document.title;\n" +
-      "    console.log(`\\t`, o);\n" +
-      "                      ^\n",
+    stderr: r`
+      Fetching source code...
+      Beautifying source code...
+      `,
+    stdout: r`
+      (function() {
+          const o = document.title;
+          console.log("\t", o);
+                            ^
+      `,
   });
   t.assert.deepStrictEqual(await runBin(`${url}:1:53`, "-B", "0"), {
     code: 0,
-    stderr: "Fetching source code...\nBeautifying source code...\n",
-    stdout:
-      "    console.log(`\\t`, o);\n                      ^\n    window.杨 = o;\n})();\n",
+    stderr: r`
+      Fetching source code...
+      Beautifying source code...
+      `,
+    stdout: r(6)`
+          console.log("\t", o);
+                            ^
+          window.杨 = o;
+      })();
+      `,
   });
 });
 
@@ -96,14 +118,18 @@ describe("code beautifier", () => {
     });
     t.assert.deepStrictEqual(await runBin(`${url}:1:53`), {
       code: 0,
-      stderr: "Fetching source code...\nBeautifying source code...\n",
-      stdout:
-        "(function() {\n" +
-        "    const o = document.title;\n" +
-        "    console.log(`\\t`, o);\n" +
-        "                      ^\n" +
-        "    window.杨 = o;\n" +
-        "})();\n",
+      stderr: r`
+        Fetching source code...
+        Beautifying source code...
+        `,
+      stdout: r`
+        (function() {
+            const o = document.title;
+            console.log("\t", o);
+                              ^
+            window.杨 = o;
+        })();
+        `,
     });
   });
 
@@ -113,10 +139,11 @@ describe("code beautifier", () => {
     });
     t.assert.deepStrictEqual(await runBin(`${url}:1:53`), {
       code: 1,
-      stderr:
-        "Fetching source code...\n" +
-        "Beautifying source code...\n" +
-        "Failed to parse response: SyntaxError: Unexpected token: operator (<)\n",
+      stderr: r`
+        Fetching source code...
+        Beautifying source code...
+        Failed to parse response: SyntaxError: Unexpected token: operator (<)
+        `,
       stdout: "",
     });
   });
@@ -136,14 +163,18 @@ describe("source map retrieval", () => {
       }),
       {
         code: 0,
-        stderr: "Fetching source code...\nFetching source maps...\n",
-        stdout:
-          "File: index.js\n" +
-          "const title = document.title\n" +
-          "console.log(`\t`, title)\n" +
-          "window.杨 = title\n" +
-          "            ^\n" +
-          "\n",
+        stderr: r`
+          Fetching source code...
+          Fetching source maps...
+          `,
+        stdout: r`
+          File: index.js
+          const title = document.title
+          console.log('	', title)
+          window.杨 = title
+                      ^
+
+          `,
       },
     );
   });
@@ -159,14 +190,18 @@ describe("source map retrieval", () => {
       }),
       {
         code: 0,
-        stderr: "Fetching source code...\nFetching source maps...\n",
-        stdout:
-          "File: index.js\n" +
-          "const title = document.title\n" +
-          "console.log(`\t`, title)\n" +
-          "window.杨 = title\n" +
-          "            ^\n" +
-          "\n",
+        stderr: r`
+          Fetching source code...
+          Fetching source maps...
+          `,
+        stdout: r`
+          File: index.js
+          const title = document.title
+          console.log('	', title)
+          window.杨 = title
+                      ^
+
+          `,
       },
     );
   });
@@ -182,14 +217,18 @@ describe("source map retrieval", () => {
       }),
       {
         code: 0,
-        stderr: "Fetching source code...\nFetching source maps...\n",
-        stdout:
-          "File: index.js\n" +
-          "const title = document.title\n" +
-          "console.log(`\t`, title)\n" +
-          "window.杨 = title\n" +
-          "            ^\n" +
-          "\n",
+        stderr: r`
+          Fetching source code...
+          Fetching source maps...
+          `,
+        stdout: r`
+          File: index.js
+          const title = document.title
+          console.log('	', title)
+          window.杨 = title
+                      ^
+
+          `,
       },
     );
   });
@@ -202,14 +241,17 @@ describe("source map retrieval", () => {
       }),
       {
         code: 0,
-        stderr: "Fetching source code...\n",
-        stdout:
-          "File: index.js\n" +
-          "const title = document.title\n" +
-          "console.log(`\t`, title)\n" +
-          "window.杨 = title\n" +
-          "            ^\n" +
-          "\n",
+        stderr: r`
+          Fetching source code...
+          `,
+        stdout: r`
+          File: index.js
+          const title = document.title
+          console.log('	', title)
+          window.杨 = title
+                      ^
+
+          `,
       },
     );
   });
@@ -221,18 +263,20 @@ describe("source map retrieval", () => {
       }),
       {
         code: 0,
-        stderr:
-          "Fetching source code...\n" +
-          "Fetching source maps...\n" +
-          "Failed to fetch source map: Error: Failed to fetch: Not found\n" +
-          "Beautifying source code...\n",
-        stdout:
-          "(function() {\n" +
-          "    const o = document.title;\n" +
-          "    console.log(`\\t`, o);\n" +
-          "    window.杨 = o;\n" +
-          "                ^\n" +
-          "})();\n",
+        stderr: r`
+          Fetching source code...
+          Fetching source maps...
+          Failed to fetch source map: Error: Failed to fetch: Not found
+          Beautifying source code...
+          `,
+        stdout: r`
+          (function() {
+              const o = document.title;
+              console.log("\t", o);
+              window.杨 = o;
+                          ^
+          })();
+          `,
       },
     );
   });
@@ -246,14 +290,14 @@ describe("source map retrieval", () => {
       await runBin(`${url}/bundle.min.js:1:64`, "--no-source-map"),
       {
         code: 0,
-        stderr: `\
+        stderr: r`
 Fetching source code...
 Beautifying source code...
 `,
-        stdout: `\
+        stdout: r`
 (function() {
     const o = document.title;
-    console.log(\`\\t\`, o);
+    console.log("\t", o);
     window.杨 = o;
                 ^
 })();
@@ -343,4 +387,31 @@ function withServer(responses: MockResponses) {
     });
     cleanupCallbacks.push(() => server.close());
   });
+}
+
+function r(template: TemplateStringsArray): string;
+function r(dedentSize: number): (template: TemplateStringsArray) => string;
+function r(
+  arg: number | TemplateStringsArray,
+): string | ((template: TemplateStringsArray) => string) {
+  if (typeof arg === "number") {
+    return (template) => dedent(arg, template);
+  } else {
+    return dedent(undefined, arg);
+  }
+
+  function dedent(
+    deindentSize: number | undefined,
+    template: TemplateStringsArray,
+  ): string {
+    // dedent the template string
+    const lines = template.raw[0].split("\n");
+    if (lines[0] === "") {
+      lines.shift();
+    }
+    const indent = deindentSize
+      ? " ".repeat(deindentSize)
+      : lines[0].match(/^\s*/)![0];
+    return lines.map((line) => line.replace(indent, "")).join("\n");
+  }
 }

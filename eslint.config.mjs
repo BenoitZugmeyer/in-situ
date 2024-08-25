@@ -8,5 +8,7 @@ export default tseslint.config({
   extends: [eslint.configs.recommended, ...tseslint.configs.recommended],
   rules: {
     "@typescript-eslint/consistent-type-imports": "error",
+    "prefer-template": ["error"],
+    "no-useless-concat": ["error"],
   },
 });
