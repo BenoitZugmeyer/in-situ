@@ -150,160 +150,126 @@ describe("code beautifier", () => {
 });
 
 describe("source map retrieval", () => {
-  async function testSourceMapRetrieval(responses: MockResponses) {
-    const url = await withServer(responses);
-    return await runBin(`${url}/bundle.min.js:1:64`);
+  async function testSourceMapRetrieval(
+    title: string,
+    {
+      serve,
+      expect: {
+        fetchSourceMaps = true,
+        fetchSourceMapsError = "",
+        useBeautify = false,
+      } = {},
+      args = [],
+    }: {
+      serve: MockResponses;
+      expect?: {
+        fetchSourceMaps?: boolean;
+        fetchSourceMapsError?: string;
+        useBeautify?: boolean;
+      };
+      args?: string[];
+    },
+  ) {
+    test(title, async (t: TestContext) => {
+      const url = await withServer(serve);
+      const statuses = ["Fetching source code..."];
+      if (fetchSourceMaps) {
+        statuses.push("Fetching source maps...");
+      }
+      if (fetchSourceMapsError) {
+        statuses.push(`Failed to fetch source map: ${fetchSourceMapsError}`);
+      }
+      if (useBeautify) {
+        statuses.push("Beautifying source code...");
+      }
+
+      t.assert.deepStrictEqual(
+        await runBin(`${url}/bundle.min.js:1:64`, ...args),
+        {
+          code: 0,
+          stderr: `${statuses.join("\n")}\n`,
+          stdout: useBeautify
+            ? r`
+            (function() {
+                const o = document.title;
+                console.log("\t", o);
+                window.杨 = o;
+                            ^
+            })();
+            `
+            : r`
+            File: index.js
+            const title = document.title
+            console.log('	', title)
+            window.杨 = title
+                        ^
+
+            `,
+        },
+      );
+    });
   }
 
-  test("use the source map from a sourcemap comment", async (t: TestContext) => {
-    t.assert.deepStrictEqual(
-      await testSourceMapRetrieval({
-        "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
-        "/bundle.min.js.map": sourceMap,
-      }),
-      {
-        code: 0,
-        stderr: r`
-          Fetching source code...
-          Fetching source maps...
-          `,
-        stdout: r`
-          File: index.js
-          const title = document.title
-          console.log('	', title)
-          window.杨 = title
-                      ^
-
-          `,
-      },
-    );
-  });
-
-  test("use the source map from a X-SourceMap header", async (t: TestContext) => {
-    t.assert.deepStrictEqual(
-      await testSourceMapRetrieval({
-        "/bundle.min.js": {
-          body: generatedCode,
-          headers: { "X-SourceMap": "bundle.min.js.map" },
-        },
-        "/bundle.min.js.map": sourceMap,
-      }),
-      {
-        code: 0,
-        stderr: r`
-          Fetching source code...
-          Fetching source maps...
-          `,
-        stdout: r`
-          File: index.js
-          const title = document.title
-          console.log('	', title)
-          window.杨 = title
-                      ^
-
-          `,
-      },
-    );
-  });
-
-  test("use the source map from a SourceMap header", async (t: TestContext) => {
-    t.assert.deepStrictEqual(
-      await testSourceMapRetrieval({
-        "/bundle.min.js": {
-          body: generatedCode,
-          headers: { SourceMap: "bundle.min.js.map" },
-        },
-        "/bundle.min.js.map": sourceMap,
-      }),
-      {
-        code: 0,
-        stderr: r`
-          Fetching source code...
-          Fetching source maps...
-          `,
-        stdout: r`
-          File: index.js
-          const title = document.title
-          console.log('	', title)
-          window.杨 = title
-                      ^
-
-          `,
-      },
-    );
-  });
-
-  test("use the source map from a data-uri", async (t: TestContext) => {
-    const base64EncodedSourceMap = Buffer.from(sourceMap).toString("base64");
-    t.assert.deepStrictEqual(
-      await testSourceMapRetrieval({
-        "/bundle.min.js": `${generatedCode}\n//@ sourceMappingURL=data:application/json;charset=utf-8;base64,${base64EncodedSourceMap}`,
-      }),
-      {
-        code: 0,
-        stderr: r`
-          Fetching source code...
-          `,
-        stdout: r`
-          File: index.js
-          const title = document.title
-          console.log('	', title)
-          window.杨 = title
-                      ^
-
-          `,
-      },
-    );
-  });
-
-  test("fallback to beautify if the source map is not found", async (t: TestContext) => {
-    t.assert.deepStrictEqual(
-      await testSourceMapRetrieval({
-        "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
-      }),
-      {
-        code: 0,
-        stderr: r`
-          Fetching source code...
-          Fetching source maps...
-          Failed to fetch source map: Error: Failed to fetch: Not found
-          Beautifying source code...
-          `,
-        stdout: r`
-          (function() {
-              const o = document.title;
-              console.log("\t", o);
-              window.杨 = o;
-                          ^
-          })();
-          `,
-      },
-    );
-  });
-
-  test("no source map option", async (t: TestContext) => {
-    const url = await withServer({
+  testSourceMapRetrieval("use the source map from a sourcemap comment", {
+    serve: {
       "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
       "/bundle.min.js.map": sourceMap,
-    });
-    t.assert.deepStrictEqual(
-      await runBin(`${url}/bundle.min.js:1:64`, "--no-source-map"),
-      {
-        code: 0,
-        stderr: r`
-Fetching source code...
-Beautifying source code...
-`,
-        stdout: r`
-(function() {
-    const o = document.title;
-    console.log("\t", o);
-    window.杨 = o;
-                ^
-})();
-`,
+    },
+  });
+
+  testSourceMapRetrieval("use the source map from a X-SourceMap header", {
+    serve: {
+      "/bundle.min.js": {
+        body: generatedCode,
+        headers: { "X-SourceMap": "bundle.min.js.map" },
       },
-    );
+      "/bundle.min.js.map": sourceMap,
+    },
+  });
+
+  testSourceMapRetrieval("use the source map from a SourceMap header", {
+    serve: {
+      "/bundle.min.js": {
+        body: generatedCode,
+        headers: { SourceMap: "bundle.min.js.map" },
+      },
+      "/bundle.min.js.map": sourceMap,
+    },
+  });
+
+  const base64EncodedSourceMap = Buffer.from(sourceMap).toString("base64");
+  testSourceMapRetrieval("use the source map from a data-uri", {
+    serve: {
+      "/bundle.min.js": `${generatedCode}\n//@ sourceMappingURL=data:application/json;charset=utf-8;base64,${base64EncodedSourceMap}`,
+    },
+    expect: {
+      fetchSourceMaps: false,
+    },
+  });
+
+  testSourceMapRetrieval(
+    "fallback to beautify if the source map is not found",
+    {
+      serve: {
+        "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
+      },
+      expect: {
+        fetchSourceMapsError: "Error: Failed to fetch: Not found",
+        useBeautify: true,
+      },
+    },
+  );
+
+  testSourceMapRetrieval("no source map option", {
+    serve: {
+      "/bundle.min.js": `${generatedCode}\n//# sourceMappingURL=bundle.min.js.map`,
+      "/bundle.min.js.map": sourceMap,
+    },
+    args: ["--no-source-map"],
+    expect: {
+      fetchSourceMaps: false,
+      useBeautify: true,
+    },
   });
 });
 
