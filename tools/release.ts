@@ -39,10 +39,8 @@ if (!firstChangelogLine.startsWith(expectedFirstChangelogLine)) {
   error(`CHANGELOG.md should start with '${expectedFirstChangelogLine}'`);
 }
 
-console.log("\nRunning tests...");
-exec("npm --silent test", { stdio: "inherit" });
-console.log("\nRunning lint...");
-exec("npm run --silent lint", { stdio: "inherit" });
+console.log("\nRunning checks...");
+exec("npm run --silent check", { stdio: "inherit" });
 
 console.log("\nPacking...");
 const packed = exec("npm pack 2>&1").toString().split("\n");
@@ -50,7 +48,6 @@ const packed = exec("npm pack 2>&1").toString().split("\n");
 const STATE_INIT = 0;
 const STATE_TARBALL_CONTENTS = 1;
 const STATE_TARBALL_DETAILS = 2;
-const STATE_TARBALL_FILENAME = 3;
 
 let state = STATE_INIT;
 const content = new Set<string>();
@@ -60,25 +57,20 @@ for (let line of packed) {
   line = line.replace(/^npm notice /, "").trim();
   switch (state) {
     case STATE_INIT:
-      if (line === "=== Tarball Contents ===") {
+      if (line === "Tarball Contents") {
         state = STATE_TARBALL_CONTENTS;
       }
       break;
     case STATE_TARBALL_CONTENTS:
-      if (line === "=== Tarball Details ===") {
+      if (line === "Tarball Details") {
         state = STATE_TARBALL_DETAILS;
       } else {
         content.add(line.match(/.*?\s+(.*)$/)![1]);
       }
       break;
     case STATE_TARBALL_DETAILS:
-      if (!line) {
-        state = STATE_TARBALL_FILENAME;
-      }
-      break;
-    case STATE_TARBALL_FILENAME:
-      if (line) {
-        tarballFileName = line;
+      if (line.startsWith("filename: ")) {
+        tarballFileName = line.slice("filename: ".length);
       }
       break;
   }
