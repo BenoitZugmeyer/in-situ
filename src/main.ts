@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import CLIError from "./CLIError.js";
+import CLIError from "./CLIError.ts";
 import parseArguments from "./parseArguments.ts";
-import applyBeautify from "./applyBeautify.js";
-import applySourceMap from "./applySourceMap.js";
-import printContext from "./printContext.js";
-import log from "./log.js";
+import applyBeautify from "./applyBeautify.ts";
+import applySourceMap from "./applySourceMap.ts";
+import printContext from "./printContext.ts";
+import log from "./log.ts";
 import read from "./read.ts";
 import type { ApplyResult } from "./types.ts";
 

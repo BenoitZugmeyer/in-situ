@@ -5,7 +5,7 @@ import {
 } from "@jridgewell/trace-mapping";
 
 import readSourceMap from "./readSourceMap.ts";
-import log from "./log.js";
+import log from "./log.ts";
 import type { ApplyResult, InputSource } from "./types.ts";
 
 export default async function applySourceMap({
