@@ -28,11 +28,14 @@
     "terser": "^5.31.6"
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.1",
     "@types/cardinal": "^2.1.1",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.2.0",
     "esbuild": "^0.23.0",
-    "eslint": "^9.9.0",
+    "eslint": "^9.9.1",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.2.0"
   }
 }

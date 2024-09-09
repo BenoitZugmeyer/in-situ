@@ -1,41 +1,14 @@
-import js from "@eslint/js";
+// @ts-check
 
-export default [
-  js.configs.recommended,
-  {
-    ignores: ["main.js"],
-  },
-  {
-    languageOptions: {
-      globals: {
-        fetch: "readonly",
-        console: "readonly",
-        process: "readonly",
-        Buffer: "readonly",
-      },
-    },
-    rules: {
-      "no-unused-vars": ["error", { varsIgnorePattern: "^_" }],
-    },
-  },
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
 
-  {
-    files: ["tools/*.js"],
-    rules: {
-      "no-console": ["off"],
-    },
+export default tseslint.config({
+  ignores: ["main.js"],
+  extends: [eslint.configs.recommended, ...tseslint.configs.recommended],
+  rules: {
+    "@typescript-eslint/consistent-type-imports": "error",
+    "prefer-template": ["error"],
+    "no-useless-concat": ["error"],
   },
-
-  {
-    files: ["**/*.test.js"],
-    languageOptions: {
-      globals: {
-        expect: "readonly",
-        test: "readonly",
-        describe: "readonly",
-        beforeEach: "readonly",
-        afterEach: "readonly",
-      },
-    },
-  },
-];
+});

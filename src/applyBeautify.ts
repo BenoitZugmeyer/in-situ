@@ -3,7 +3,7 @@ import { TraceMap, generatedPositionFor } from "@jridgewell/trace-mapping";
 
 import CLIError from "./CLIError.js";
 import log from "./log.js";
-import { ApplyResult, InputSource } from "./types.js";
+import type { ApplyResult, InputSource } from "./types.js";
 
 declare module "terser" {
   interface MinifyOutput {

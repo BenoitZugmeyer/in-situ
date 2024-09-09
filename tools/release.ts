@@ -18,7 +18,7 @@ if (!versionMatches) {
   error(`Tag '${tag}' doesn't look like a version`);
 }
 
-const [_, version, stableVersion, channel = "latest"] = versionMatches!;
+const [, version, stableVersion, channel = "latest"] = versionMatches!;
 
 // Verify last commit message
 const message = exec('git log -1 --pretty="format:%s\n%b"').toString().trim();
