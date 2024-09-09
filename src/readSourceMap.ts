@@ -1,5 +1,5 @@
-import log from "./log.js";
-import type { ReadResult } from "./read.js";
+import log from "./log.ts";
+import type { ReadResult } from "./read.ts";
 
 export default async function readSourceMap(
   bundle: ReadResult,

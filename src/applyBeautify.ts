@@ -1,9 +1,9 @@
 import { minify } from "terser";
 import { TraceMap, generatedPositionFor } from "@jridgewell/trace-mapping";
 
-import CLIError from "./CLIError.js";
-import log from "./log.js";
-import type { ApplyResult, InputSource } from "./types.js";
+import CLIError from "./CLIError.ts";
+import log from "./log.ts";
+import type { ApplyResult, InputSource } from "./types.ts";
 
 declare module "terser" {
   interface MinifyOutput {
