@@ -37,7 +37,7 @@ afterEach(() => {
 
 test("fails if no argument is given", async (t: TestContext) => {
   t.assert.deepStrictEqual(await runBin(), {
-    code: 0,
+    code: 1,
     stderr: ``,
     stdout: r`
       Usage: in-situ [options] <URL:LINE:COLUMN>
@@ -53,6 +53,14 @@ test("fails if no argument is given", async (t: TestContext) => {
         -V, --version               output the version number
         -h, --help                  output usage information
       `,
+  });
+});
+
+test("fails if invalid argument is given", async (t: TestContext) => {
+  t.assert.deepStrictEqual(await runBin("-x"), {
+    code: 1,
+    stderr: `Unknown option '-x'. To specify a positional argument starting with a '-', place it at the end of the command after '--', as in '-- "-x"\n`,
+    stdout: "",
   });
 });
 

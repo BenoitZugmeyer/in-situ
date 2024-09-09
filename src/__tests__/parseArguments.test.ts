@@ -10,38 +10,33 @@ test("parseArguments", (t: TestContext) => {
     });
     t.assert.snapshot(stdout);
     t.assert.deepStrictEqual(exit, {
-      status: undefined,
+      status: 1,
     });
   }
 
   {
     const { stdout, exit } = withStdout(() => {
-      parseArguments(`x x --version`.split(" "));
+      parseArguments(`--version`.split(" "));
     });
     t.assert.deepStrictEqual(exit, { status: 0 });
     t.assert.match(stdout, /^\d+\.\d+\.\d+.*\n$/);
   }
 
-  t.assert.deepStrictEqual(
-    parseArguments(`x x https://foo.com:1:1`.split(" ")),
-    {
-      debug: undefined,
-      sourceURL: "https://foo.com",
-      position: { line: 1, column: 1 },
-      beforeContext: undefined,
-      afterContext: undefined,
-      useSourceMap: true,
-    },
-  );
+  t.assert.deepStrictEqual(parseArguments(`https://foo.com:1:1`.split(" ")), {
+    debug: false,
+    sourceURL: "https://foo.com",
+    position: { line: 1, column: 1 },
+    beforeContext: 5,
+    afterContext: 5,
+    useSourceMap: true,
+  });
 
-  const parsedArguments = parseArguments(
-    `x x -C 2 https://foo.com:1:1`.split(" "),
-  );
+  const parsedArguments = parseArguments(`-C 2 https://foo.com:1:1`.split(" "));
   t.assert.strictEqual(parsedArguments.beforeContext, 2);
   t.assert.strictEqual(parsedArguments.afterContext, 2);
 
   t.assert.strictEqual(
-    parseArguments(`x x -d https://foo.com:1:1`.split(" ")).debug,
+    parseArguments(`-d https://foo.com:1:1`.split(" ")).debug,
     true,
   );
 });
