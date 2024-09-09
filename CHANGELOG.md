@@ -1,3 +1,10 @@
+2024-09-09 v2.2.0
+
+- Fix: compatibility with latest NodeJS versions
+- Improve: Migrate codebase to TypeScript
+- Improve: Drop Jest in favor of native NodeJS test runner
+- Improve: Drop Commander in favor of native NodeJS argument parser
+
 2022-03-06 v2.1.0
 
 - Feature: read from local files
