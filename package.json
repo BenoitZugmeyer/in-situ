@@ -12,7 +12,6 @@
     "lint": "eslint",
     "test": "tools/test.sh",
     "test:coverage": "tools/test.sh --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info && genhtml lcov.info --output-directory=coverage --rc branch_coverage=1",
-    "test:update-snapshots": "tools/test.sh --test-update-snapshots",
     "typecheck": "tsc",
     "format": "prettier --write .",
     "check": "npm test && tsc && prettier --check . && eslint",

@@ -6,8 +6,9 @@ const isTTY = process.stderr.isTTY;
 let status: string | undefined;
 
 export default {
-  debug: makeLogFunction(),
-  error: makeLogFunction(),
+  debug: makeLogFunction(process.stdout),
+  info: makeLogFunction(process.stdout),
+  error: makeLogFunction(process.stderr),
   status: setStatus,
 };
 
@@ -16,12 +17,12 @@ interface LogFunction {
   disabled: boolean;
 }
 
-function makeLogFunction() {
+function makeLogFunction(stream: NodeJS.WriteStream): LogFunction {
   const log: LogFunction = (message) => {
     if (!log.disabled) {
       clearStatus();
-      process.stderr.write(String(message));
-      process.stderr.write("\n");
+      stream.write(String(message));
+      stream.write("\n");
       restoreStatus();
     }
   };
