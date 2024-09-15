@@ -1,11 +1,9 @@
-import { readFileSync } from "fs";
 import { parseArgs } from "node:util";
 
 import CLIError from "./CLIError.ts";
 import type { Configuration } from "./types.ts";
-import { fileURLToPath } from "node:url";
 
-const OPTIONS = {
+export const OPTIONS = {
   "after-context": {
     type: "string",
     short: "A",
@@ -50,9 +48,19 @@ const OPTIONS = {
   },
 } as const;
 
-export default function parseArguments(
-  args = process.argv.slice(2),
-): Configuration {
+type ParseArgumentsResult =
+  | {
+      command: "version";
+    }
+  | {
+      command: "help";
+    }
+  | {
+      command: "context";
+      configuration: Configuration;
+    };
+
+export default function parseArguments(args: string[]): ParseArgumentsResult {
   const parseArgsConfig = {
     args,
     options: OPTIONS,
@@ -71,26 +79,25 @@ export default function parseArguments(
   const { values, positionals } = parseArgsResult;
 
   if (values.version) {
-    const pkg = getPackageInfos();
-    console.log(pkg.version);
-    process.exit(0);
+    return { command: "version" };
   }
 
   if (values.help) {
-    printHelp();
-    process.exit(0);
+    return { command: "help" };
   }
 
   const arg = positionals[0];
   if (!arg) {
-    printHelp();
-    process.exit(1);
+    throw new CLIError(
+      "Missing positional argument URL:LINE:COLUMN. Use --help for documentation.",
+    );
   }
 
   const matches = /^(.*):(\d+):(\d+)$/.exec(arg);
   if (!matches) {
-    printHelp();
-    process.exit(1);
+    throw new CLIError(
+      `Invalid positional argument ${arg}. Use --help for documentation.`,
+    );
   }
 
   const [, sourceURL, line, column] = matches;
@@ -107,58 +114,16 @@ export default function parseArguments(
   );
 
   return {
-    debug: values.debug!,
-    sourceURL,
-    position: { line: Number(line), column: Number(column) },
-    beforeContext,
-    afterContext,
-    useSourceMap: !values["no-source-map"]!,
+    command: "context",
+    configuration: {
+      debug: values.debug!,
+      sourceURL,
+      position: { line: Number(line), column: Number(column) },
+      beforeContext,
+      afterContext,
+      useSourceMap: !values["no-source-map"]!,
+    },
   };
-}
-
-function printHelp() {
-  const pkg = getPackageInfos();
-  let message = `\
-Usage: ${pkg.name} [options] <URL:LINE:COLUMN>
-
-${pkg.description}
-
-Options:`;
-  for (const [name, option] of Object.entries(OPTIONS)) {
-    let names = "";
-    if ("short" in option) {
-      names += `-${option.short}, `;
-    }
-    names += `--${name}`;
-    if (option.type === "string") {
-      names += " <num>"; // for now, all 'string' types are numbers
-    }
-    message += `\n  ${names.padEnd(27)} ${option.description}`;
-  }
-  console.log(message);
-}
-
-function getPackageInfos() {
-  let input;
-  for (const path of [
-    // When from main.js
-    "./package.json",
-    // When from src/main.js
-    "../package.json",
-  ]) {
-    try {
-      input = readFileSync(fileURLToPath(import.meta.resolve(path)), "utf-8");
-      break;
-    } catch {
-      // continue
-    }
-  }
-
-  if (!input) {
-    throw new CLIError("Cannot find package.json");
-  }
-
-  return JSON.parse(input);
 }
 
 function parseInteger(s: string): number {

@@ -1,3 +1,0 @@
-exports[`parseArguments 1`] = `
-"Usage: in-situ [options] <URL:LINE:COLUMN>\\n\\nDownload, beautify and print lines from a minified JavaScript source\\n\\nOptions:\\n  -A, --after-context <num>   print <num> lines of trailing context after the selected line\\n  -B, --before-context <num>  print <num> lines of leading context before the selected line\\n  -C, --context <num>         print <num> lines of leading and trailing context surrounding the selected line\\n  --no-source-map             don't try to use a source map\\n  -d, --debug                 output extra debugging\\n  -V, --version               output the version number\\n  -h, --help                  output usage information\\n"
-`;
