@@ -102,25 +102,14 @@ export default function parseArguments(args: string[]): ParseArgumentsResult {
 
   const [, sourceURL, line, column] = matches;
 
-  const beforeContext = parseInteger(
-    values["before-context"] !== undefined
-      ? values["before-context"]
-      : values.context!,
-  );
-  const afterContext = parseInteger(
-    values["after-context"] !== undefined
-      ? values["after-context"]
-      : values.context!,
-  );
-
   return {
     command: "context",
     configuration: {
       debug: values.debug!,
       sourceURL,
       position: { line: Number(line), column: Number(column) },
-      beforeContext,
-      afterContext,
+      beforeContext: parseInteger(values["before-context"] ?? values.context),
+      afterContext: parseInteger(values["after-context"] ?? values.context),
       useSourceMap: !values["no-source-map"]!,
     },
   };
