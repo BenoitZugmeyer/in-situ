@@ -69,7 +69,7 @@ function commanVersion() {
 async function commandContext({
   debug,
   sourceURL,
-  position,
+  location,
   beforeContext,
   afterContext,
   useSourceMap,
@@ -88,11 +88,11 @@ async function commandContext({
     type: "unresolved",
   };
   if (useSourceMap) {
-    applyResult = await applySourceMap({ readResult, position });
+    applyResult = await applySourceMap({ readResult, location });
   }
   if (applyResult.type !== "resolved") {
     // TODO: use filename from sourcemaps? is that an actual use case?
-    applyResult = await applyBeautify({ readResult, position });
+    applyResult = await applyBeautify({ readResult, location });
   }
   if (applyResult.type !== "resolved") {
     throw new CLIError("Failed to apply source map or beautify");

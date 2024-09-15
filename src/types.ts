@@ -3,24 +3,24 @@ import type { ReadResult } from "./read.ts";
 export interface Configuration {
   debug: boolean;
   sourceURL: string;
-  position: Position;
+  location: Location;
   useSourceMap: boolean;
   beforeContext: number;
   afterContext: number;
 }
 
-export interface Position {
+export interface Location {
   line: number;
   column: number;
 }
 
-export interface ResolvedPosition extends Position {
+export interface ResolvedLocation extends Location {
   lastColumn?: number;
 }
 
 export interface InputSource {
   readResult: ReadResult;
-  position: Position;
+  location: Location;
 }
 
 export type ApplyResult =
@@ -35,7 +35,7 @@ export type ApplyResult =
 
 export interface ResolvedApplyResult {
   type: "resolved";
-  position: ResolvedPosition;
+  location: ResolvedLocation;
   fileName: string | undefined;
   content: string;
 }

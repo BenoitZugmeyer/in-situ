@@ -107,7 +107,7 @@ export default function parseArguments(args: string[]): ParseArgumentsResult {
     configuration: {
       debug: values.debug!,
       sourceURL,
-      position: { line: Number(line), column: Number(column) },
+      location: { line: Number(line), column: Number(column) },
       beforeContext: parseInteger(values["before-context"] ?? values.context),
       afterContext: parseInteger(values["after-context"] ?? values.context),
       useSourceMap: !values["no-source-map"]!,

@@ -1,8 +1,8 @@
 # in-situ
 
-`in-situ` is a simple CLI application taking a JavaScript file URL and a line/column position inside
+`in-situ` is a simple CLI application taking a JavaScript file URL and a line/column location inside
 it. It will download the JavaScript file, beautify it, and print the context around the given
-position.
+location.
 
 ## Installation
 

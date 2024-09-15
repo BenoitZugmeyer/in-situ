@@ -26,7 +26,7 @@ function formatContext(
   {
     content,
     fileName,
-    position: { line, column, lastColumn },
+    location: { line, column, lastColumn },
   }: ResolvedApplyResult,
   {
     shouldHighlight = false,

@@ -9,7 +9,7 @@ import log from "./log.ts";
 import type { ApplyResult, InputSource } from "./types.ts";
 
 export default async function applySourceMap({
-  position,
+  location,
   readResult,
 }: InputSource): Promise<ApplyResult> {
   const sourceMapContent = await readSourceMap(readResult);
@@ -17,13 +17,13 @@ export default async function applySourceMap({
 
   const map = new TraceMap(sourceMapContent);
 
-  const mappedPosition = originalPositionFor(map, position);
-  if (!mappedPosition.source) {
-    log.error("Failed to resolve the position with source map");
+  const mappedLocation = originalPositionFor(map, location);
+  if (!mappedLocation.source) {
+    log.error("Failed to resolve the location with source map");
     return { type: "unresolved" };
   }
 
-  const fileName = mappedPosition.source;
+  const fileName = mappedLocation.source;
   const content = sourceContentFor(map, fileName);
   if (!content) {
     log.error("Source map doesn't include the source content");
@@ -36,7 +36,7 @@ export default async function applySourceMap({
   return {
     type: "resolved",
     content,
-    position: mappedPosition,
+    location: mappedLocation,
     fileName,
   };
 }

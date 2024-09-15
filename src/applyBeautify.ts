@@ -28,18 +28,18 @@ export default async function applyBeautify(
   }
 
   const map = new TraceMap(uglifyResult.map as string);
-  const position = generatedPositionFor(map, {
-    line: source.position.line,
-    column: source.position.column,
+  const location = generatedPositionFor(map, {
+    line: source.location.line,
+    column: source.location.column,
     source: map.sources[0]!,
   });
-  if (position.line === null || position.column === null) {
-    throw new CLIError("Failed to map position using beautify");
+  if (location.line === null || location.column === null) {
+    throw new CLIError("Failed to map location using beautify");
   }
   return {
     type: "resolved",
     fileName: undefined,
     content: uglifyResult.code!,
-    position,
+    location,
   };
 }

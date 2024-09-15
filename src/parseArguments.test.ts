@@ -44,7 +44,7 @@ describe("parseArguments", () => {
       configuration: {
         debug: false,
         sourceURL: "https://foo.com",
-        position: { line: 1, column: 1 },
+        location: { line: 1, column: 1 },
         useSourceMap: true,
         beforeContext: 5,
         afterContext: 5,
@@ -52,14 +52,14 @@ describe("parseArguments", () => {
     });
   });
 
-  test("URL and position", (t: TestContext) => {
+  test("URL and location", (t: TestContext) => {
     const parsedArguments = parseArguments([`https://foo.com:42:12`]);
     t.assert.strictEqual(parsedArguments.command, "context");
     t.assert.strictEqual(
       parsedArguments.configuration.sourceURL,
       "https://foo.com",
     );
-    t.assert.deepStrictEqual(parsedArguments.configuration.position, {
+    t.assert.deepStrictEqual(parsedArguments.configuration.location, {
       line: 42,
       column: 12,
     });
