@@ -1,6 +1,6 @@
 import { test, type TestContext } from "node:test";
 
-import { __tests__ } from "../printContext.ts";
+import { __tests__ } from "./printContext.ts";
 
 const { formatContext } = __tests__;
 
