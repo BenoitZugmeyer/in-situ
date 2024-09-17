@@ -89,25 +89,27 @@ export default function parseArguments(args: string[]): ParseArgumentsResult {
   const arg = positionals[0];
   if (!arg) {
     throw new CLIError(
-      "Missing positional argument URL:LINE:COLUMN. Use --help for documentation.",
+      "Missing positional argument LOCATION. Use --help for documentation.",
     );
   }
 
-  const matches = /^(.*):(\d+):(\d+)$/.exec(arg);
+  const matches = /^(.*?):(\d+)(?::(\d+))?$/.exec(arg);
   if (!matches) {
     throw new CLIError(
       `Invalid positional argument ${arg}. Use --help for documentation.`,
     );
   }
 
-  const [, sourceURL, line, column] = matches;
+  const [, sourceURL, lineOrPosition, column] = matches;
 
   return {
     command: "context",
     configuration: {
       debug: values.debug!,
       sourceURL,
-      location: { line: Number(line), column: Number(column) },
+      location: column
+        ? { line: Number(lineOrPosition), column: Number(column) }
+        : { position: Number(lineOrPosition) },
       beforeContext: parseInteger(values["before-context"] ?? values.context),
       afterContext: parseInteger(values["after-context"] ?? values.context),
       useSourceMap: !values["no-source-map"]!,

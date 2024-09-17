@@ -9,18 +9,24 @@ export interface Configuration {
   afterContext: number;
 }
 
-export interface Location {
+export type Location = GridLocation | PositionLocation;
+
+export interface GridLocation {
   line: number;
   column: number;
 }
 
-export interface ResolvedLocation extends Location {
+export interface PositionLocation {
+  position: number;
+}
+
+export interface ResolvedLocation extends GridLocation {
   lastColumn?: number;
 }
 
 export interface InputSource {
   readResult: ReadResult;
-  location: Location;
+  location: GridLocation;
 }
 
 export type ApplyResult =

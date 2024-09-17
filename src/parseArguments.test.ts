@@ -9,7 +9,7 @@ describe("parseArguments", () => {
     t.assert.throws(
       () => parseArguments([]),
       new CLIError(
-        "Missing positional argument URL:LINE:COLUMN. Use --help for documentation.",
+        "Missing positional argument LOCATION. Use --help for documentation.",
       ),
     );
   });
@@ -52,16 +52,45 @@ describe("parseArguments", () => {
     });
   });
 
-  test("URL and location", (t: TestContext) => {
-    const parsedArguments = parseArguments([`https://foo.com:42:12`]);
-    t.assert.strictEqual(parsedArguments.command, "context");
-    t.assert.strictEqual(
-      parsedArguments.configuration.sourceURL,
-      "https://foo.com",
-    );
-    t.assert.deepStrictEqual(parsedArguments.configuration.location, {
-      line: 42,
-      column: 12,
+  describe("location", () => {
+    test("URL:LINE:COLUMN", (t: TestContext) => {
+      const parsedArguments = parseArguments([`https://foo.com:42:12`]);
+      t.assert.strictEqual(parsedArguments.command, "context");
+      t.assert.strictEqual(
+        parsedArguments.configuration.sourceURL,
+        "https://foo.com",
+      );
+      t.assert.deepStrictEqual(parsedArguments.configuration.location, {
+        line: 42,
+        column: 12,
+      });
+    });
+    test("URL:POSITION", (t: TestContext) => {
+      const parsedArguments = parseArguments([`https://foo.com:42`]);
+      t.assert.strictEqual(parsedArguments.command, "context");
+      t.assert.strictEqual(
+        parsedArguments.configuration.sourceURL,
+        "https://foo.com",
+      );
+      t.assert.deepStrictEqual(parsedArguments.configuration.location, {
+        position: 42,
+      });
+    });
+    test("invalid location", (t: TestContext) => {
+      t.assert.throws(
+        () => parseArguments([`https://foo.com:42:`]),
+        new CLIError(
+          "Invalid positional argument https://foo.com:42:. Use --help for documentation.",
+        ),
+      );
+    });
+    test("missing location", (t: TestContext) => {
+      t.assert.throws(
+        () => parseArguments([`https://foo.com`]),
+        new CLIError(
+          "Invalid positional argument https://foo.com. Use --help for documentation.",
+        ),
+      );
     });
   });
 
