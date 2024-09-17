@@ -38,7 +38,7 @@ afterEach(() => {
 test("fails if no argument is given", async (t: TestContext) => {
   t.assert.deepStrictEqual(await runBin(), {
     code: 1,
-    stderr: `Missing positional argument URL:LINE:COLUMN. Use --help for documentation.\n`,
+    stderr: `Missing positional argument LOCATION. Use --help for documentation.\n`,
     stdout: "",
   });
 });

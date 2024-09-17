@@ -11,6 +11,7 @@ import printContext from "./printContext.ts";
 import log from "./log.ts";
 import read from "./read.ts";
 import type { ApplyResult, Configuration } from "./types.ts";
+import resolveGridLocation from "./resolveGridLocation.ts";
 
 main().catch((e) => {
   if (e instanceof CLIError) {
@@ -43,9 +44,11 @@ async function main() {
 export function commandHelp() {
   const pkg = getPackageInfos();
   let message = `\
-Usage: ${pkg.name} [options] <URL:LINE:COLUMN>
+Usage: ${pkg.name} [options] <LOCATION>
 
 ${pkg.description}
+
+The <LOCATION> argument is an URL or a file path to a JavaScript bundle, followed by a location formatted as ':line:column' or ':osition'. Example: 'https://example.com/bundle.js:10:20' or './bundle.js:123'.
 
 Options:`;
   for (const [name, option] of Object.entries(OPTIONS)) {
@@ -69,7 +72,7 @@ function commanVersion() {
 async function commandContext({
   debug,
   sourceURL,
-  position,
+  location,
   beforeContext,
   afterContext,
   useSourceMap,
@@ -84,15 +87,17 @@ async function commandContext({
     throw new CLIError(`Failed to fetch source code: ${e}`);
   }
 
+  location = resolveGridLocation(location, readResult.content);
+
   let applyResult: ApplyResult = {
     type: "unresolved",
   };
   if (useSourceMap) {
-    applyResult = await applySourceMap({ readResult, position });
+    applyResult = await applySourceMap({ readResult, location });
   }
   if (applyResult.type !== "resolved") {
     // TODO: use filename from sourcemaps? is that an actual use case?
-    applyResult = await applyBeautify({ readResult, position });
+    applyResult = await applyBeautify({ readResult, location });
   }
   if (applyResult.type !== "resolved") {
     throw new CLIError("Failed to apply source map or beautify");

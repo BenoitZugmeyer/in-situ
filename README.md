@@ -1,8 +1,8 @@
 # in-situ
 
-`in-situ` is a simple CLI application taking a JavaScript file URL and a line/column position inside
+`in-situ` is a simple CLI application taking a JavaScript file URL and a line/column location inside
 it. It will download the JavaScript file, beautify it, and print the context around the given
-position.
+location.
 
 ## Installation
 
@@ -17,9 +17,11 @@ Note: instead of installing it, you can use `npx in-situ` to run it directly.
 ## Usage
 
 ```
-Usage: in-situ [options] <URL:LINE:COLUMN>
+Usage: in-situ [options] <LOCATION>
 
 Download, beautify and print lines from a minified JavaScript source
+
+The <LOCATION> argument is an URL or a file path to a JavaScript bundle, followed by a location formatted as ':line:column' or ':osition'. Example: 'https://example.com/bundle.js:10:20' or './bundle.js:123'.
 
 Options:
   -A, --after-context <num>   print <num> lines of trailing context after the selected line
