@@ -1,3 +1,8 @@
+2024-09-17 v2.3.0
+
+- Feature: add support for specifying a character position instead of line/column
+- Improve: improved error messages
+
 2024-09-09 v2.2.0
 
 - Fix: compatibility with latest NodeJS versions
