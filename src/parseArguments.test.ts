@@ -1,8 +1,8 @@
 import { test, describe } from "node:test";
 import type { TestContext } from "node:test";
 
-import parseArguments from "../parseArguments.ts";
-import CLIError from "../CLIError.ts";
+import parseArguments from "./parseArguments.ts";
+import CLIError from "./CLIError.ts";
 
 describe("parseArguments", () => {
   test("empty arguments", (t: TestContext) => {
